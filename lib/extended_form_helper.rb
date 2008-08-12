@@ -1,30 +1,15 @@
 module ExtendedFormHelper
-# 
-#   def submit_controls(options = {}) #todo test
-#     options[:save_label] ||= 'Save'
-#     options[:class_name] ||= 'submitControls'
-#     controls = submit_tag(options[:save_label], :class => 'save')
-# 
-#     if options[:destroy_link] #todo POST method, question
-#       options[:destroy_label] ||= 'Delete'
-#       options[:confirm_delete] ||= 'Sure to delete?'
-#       controls << link_to(options[:destroy_label], options[:destroy_link], :method => :delete, :confirm => options[:confirm_delete], :class => 'destroy')
-#     end
-# 
-#     content_tag(:fieldset, controls, :class => options[:class_name])
-#   end
-# 
-  # def extended_submit_tag(value = 'Save changes', options = {})
-  #   extended_input(submit_tag(value, options), 'submit')
-  # end
-# 
+  def extended_submit_tag(value = 'Save changes', options = {})
+    extended_input(submit_tag(value, options), 'submit')
+  end
+
   def extended_text_field(object, method, options = {})
     label_text = options.delete(:label)
-  
+
     html = extended_label(object, method, label_text)
     html << text_field(object, method, options)
     html << extended_error_message_on(object, method, options)
-  
+
     extended_input(html, 'text')
   end
 
@@ -60,59 +45,59 @@ module ExtendedFormHelper
     extended_input(html, 'password')
   end
 
-#   def extended_check_box(object, method, options = {}, checked_value = '1', unchecked_value = '0')
-#     label_text = options.delete(:label)
-# 
-#     html = check_box(object, method, options, checked_value, unchecked_value)
-#     html << extended_label(object, method, label_text)
-#     html << extended_error_message_on(object, method, options)
-# 
-#     extended_input(html, 'checkBox')
-#   end
-# 
-#   def extended_upload_file_field(object, method, options = {})
-#     label_text = options.delete(:label)
-# 
-#     object_self = case object
-#     when String, Symbol
-#       instance_variable_get("@#{object.sub(/\[\]$/, '')}") rescue nil
-#     else
-#       object
-#     end
-# 
-#     file = object_self ? object_self.send(method) : nil
-# 
-#     html = extended_label(object, method, label_text)
-#     html << link_to(File.basename(file.url), file.url) if file
-#     html << upload_column_field(object, method, options)
-#     html << extended_error_message_on(object, method, options)
-# 
-#     extended_input(html, 'file')
-#   end
-# 
-#   def extended_upload_image_field(object, method, options = {})
-#     label_text = options.delete(:label)
-# 
-#     object_self = case object
-#     when String, Symbol
-#       instance_variable_get("@#{object.sub(/\[\]$/, '')}") rescue nil
-#     else
-#       object
-#     end
-# 
-#     image = object_self ? object_self.send(method) : nil
-#     version = options.delete(:preview_version)
-#     image = image.send(version) if image && version
-# 
-#     html = extended_label(object, method, label_text)
-#     html << image_tag(image.url) if image
-#     html << upload_column_field(object, method, options)
-#     html << extended_error_message_on(object, method, options)
-# 
-#     extended_input(html, 'file')
-#   end
-# 
-# 
+  def extended_check_box(object, method, options = {}, checked_value = '1', unchecked_value = '0')
+    label_text = options.delete(:label)
+
+    html = check_box(object, method, options, checked_value, unchecked_value)
+    html << extended_label(object, method, label_text)
+    html << extended_error_message_on(object, method, options)
+
+    extended_input(html, 'checkBox')
+  end
+
+  # def extended_upload_file_field(object, method, options = {})
+  #   label_text = options.delete(:label)
+  #
+  #   object_self = case object
+  #   when String, Symbol
+  #     instance_variable_get("@#{object.sub(/\[\]$/, '')}") rescue nil
+  #   else
+  #     object
+  #   end
+  #
+  #   file = object_self ? object_self.send(method) : nil
+  #
+  #   html = extended_label(object, method, label_text)
+  #   html << link_to(File.basename(file.url), file.url) if file
+  #   html << upload_column_field(object, method, options)
+  #   html << extended_error_message_on(object, method, options)
+  #
+  #   extended_input(html, %w(file fileUpload))
+  # end
+
+  # def extended_upload_image_field(object, method, options = {})
+  #   label_text = options.delete(:label)
+  #
+  #   object_self = case object
+  #   when String, Symbol
+  #     instance_variable_get("@#{object.sub(/\[\]$/, '')}") rescue nil
+  #   else
+  #     object
+  #   end
+  #
+  #   image = object_self ? object_self.send(method) : nil
+  #   version = options.delete(:preview_version)
+  #   image = image.send(version) if image && version
+  #
+  #   html = extended_label(object, method, label_text)
+  #   html << image_tag(image.url) if image
+  #   html << upload_column_field(object, method, options)
+  #   html << extended_error_message_on(object, method, options)
+  #
+  #   extended_input(html, %w(file imageUpload))
+  # end
+
+
 # #   def extended_radio_button(object, label, method, tag_value, options = {})
 # #     label = extended_label(object, label, method)
 # #     input = object.radio_button(method, tag_value, options)
@@ -141,7 +126,7 @@ module ExtendedFormHelper
 # #
 # #     extended_input(errors + inputs, :radio_button)
 # #   end
-# 
+#
 # #   def extended_collection_select(object, label, method, collection, value_method, text_method, options = {}, html_options = {})
 # #     label = extended_label(object, label, method)
 # #     input = object.collection_select(method, collection, value_method, text_method, options, html_options)
@@ -157,23 +142,23 @@ module ExtendedFormHelper
 # #
 # #     extended_input(errors + label + input, :text)
 # #   end
-# 
-# 
-# 
+#
+#
+#
 #   def remote_form_for(record_or_name_or_array, *args, &proc)
 #     options = args.extract_options!
-#     
+#
 #     if options[:html] && options[:html][:multipart]
 #       @_multipart_remote_form_for_id = (@_multipart_remote_form_for_id || 0) + 1
 #       target = "upload_frame_#{@_multipart_remote_form_for_id}"
-# 
+#
 #       options[:html] ||= {}
 #       options[:html][:method] = :post
 #       #options[:html][:multipart] = true
 #       options[:html][:target] = target
-# 
+#
 #       options[:html][:onsubmit] = (options[:html][:onsubmit] ? options[:html][:onsubmit] + "; " : "") + 'this.insert(\'<input type="hidden" name="format" value="js" />\');'
-#       
+#
 #       concat "<iframe id=\"#{target}\" name=\"#{target}\" style=\"width:1px;height:1px;border:0px;display:none;\" src=\"about:blank\"></iframe>", proc.binding
 #       args << options
 #       form_for(record_or_name_or_array, options, &proc)
@@ -199,13 +184,14 @@ private
     end
   end
 
-  def extended_input(content, klass, options = {})
-    content_tag(:div, content, :class => "field #{klass}Field")
+  def extended_input(content, klasses, options = {})
+    klasses = klasses.to_a.map{ |klass| "#{klass}Field" } + ['field']
+    content_tag(:div, content, :class => klasses.join(' '))
   end
 end
 
 ActionView::Helpers::FormBuilder.class_eval do
-  %w(extended_text_field extended_file_field extended_text_area extended_password_field extended_upload_image_field extended_upload_file_field).each do |selector|
+  %w(extended_text_field extended_text_area extended_password_field extended_file_field extended_upload_image_field extended_upload_file_field).each do |selector|
     self.field_helpers << selector
     class_eval %Q{
       def #{selector}(method, options = {})
@@ -213,10 +199,16 @@ ActionView::Helpers::FormBuilder.class_eval do
       end
     }, __FILE__, __LINE__
   end
-  # 
-  # self.field_helpers << 'extended_check_box'
-  # 
-  # def extended_check_box(method, options = {}, checked_value = '1', unchecked_value = '0')
-  #   @template.extended_check_box(@object_name, method, objectify_options(options), checked_value, unchecked_value)
-  # end
+
+  self.field_helpers << 'extended_check_box'
+
+  def extended_check_box(method, options = {}, checked_value = '1', unchecked_value = '0')
+    @template.extended_check_box(@object_name, method, objectify_options(options), checked_value, unchecked_value)
+  end
+
+  self.field_helpers << 'extended_submit'
+
+  def extended_submit(value = "Save changes", options = {})
+    @template.extended_submit_tag(value, options.reverse_merge(:id => "#{object_name}_submit"))
+  end
 end
