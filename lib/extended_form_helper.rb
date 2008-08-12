@@ -55,119 +55,47 @@ module ExtendedFormHelper
     extended_input(html, 'checkBox')
   end
 
-  # def extended_upload_file_field(object, method, options = {})
-  #   label_text = options.delete(:label)
-  #
-  #   object_self = case object
-  #   when String, Symbol
-  #     instance_variable_get("@#{object.sub(/\[\]$/, '')}") rescue nil
-  #   else
-  #     object
-  #   end
-  #
-  #   file = object_self ? object_self.send(method) : nil
-  #
-  #   html = extended_label(object, method, label_text)
-  #   html << link_to(File.basename(file.url), file.url) if file
-  #   html << upload_column_field(object, method, options)
-  #   html << extended_error_message_on(object, method, options)
-  #
-  #   extended_input(html, %w(file fileUpload))
-  # end
+  def extended_upload_image_field(object, method, options = {})
+    label_text = options.delete(:label)
 
-  # def extended_upload_image_field(object, method, options = {})
-  #   label_text = options.delete(:label)
-  #
-  #   object_self = case object
-  #   when String, Symbol
-  #     instance_variable_get("@#{object.sub(/\[\]$/, '')}") rescue nil
-  #   else
-  #     object
-  #   end
-  #
-  #   image = object_self ? object_self.send(method) : nil
-  #   version = options.delete(:preview_version)
-  #   image = image.send(version) if image && version
-  #
-  #   html = extended_label(object, method, label_text)
-  #   html << image_tag(image.url) if image
-  #   html << upload_column_field(object, method, options)
-  #   html << extended_error_message_on(object, method, options)
-  #
-  #   extended_input(html, %w(file imageUpload))
-  # end
+    object_self = case object
+      when String, Symbol
+        instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
+      else
+        object
+    end
+    
+    image = object_self ? object_self.send(method) : nil
+    version = options.delete(:preview_version)
+    image = image.send(version) if image && version
 
+    html = extended_label(object, method, label_text)
+    html << image_tag(image.url) if image
+    html << upload_column_field(object, method, options)
+    html << extended_error_message_on(object, method, options)
 
-# #   def extended_radio_button(object, label, method, tag_value, options = {})
-# #     label = extended_label(object, label, method)
-# #     input = object.radio_button(method, tag_value, options)
-# #     #errors = error_message_on(object.object_name, method)
-# #
-# #     #fixing wrong label's for attribute to value of input's id attributr
-# #     label.sub!(/(for=["'])[^"']*(["'])/, '\1' + /id=["']([^"']*)["']/.match(input)[1] + '\2')
-# #
-# #     extended_input(input + label, :radio_button)
-# #   end
-# #
-# #   def extended_radio_select(object, method, choices, checked, options = {}, html_options = {})
-# #     choices = choices.to_a if choices.is_a? Hash
-# #
-# #     inputs = choices.collect do |choice|
-# #       label = extended_label(object, choice.first, method)
-# #       input = object.radio_button(method, choice.last, choice.last === checked ? options.merge(:checked => true) : options)
-# #
-# #       #fixing wrong label's for attribute to value of input's id attributr
-# #       label.sub!(/(for=["'])[^"']*(["'])/, '\1' + /id=["']([^"']*)["']/.match(input)[1] + '\2')
-# #
-# #       input + label
-# #     end.join("\n")
-# #
-# #     errors = error_message_on(object.object_name, method)
-# #
-# #     extended_input(errors + inputs, :radio_button)
-# #   end
-#
-# #   def extended_collection_select(object, label, method, collection, value_method, text_method, options = {}, html_options = {})
-# #     label = extended_label(object, label, method)
-# #     input = object.collection_select(method, collection, value_method, text_method, options, html_options)
-# #     errors = error_message_on(object.object_name, method)
-# #
-# #     extended_input(errors + label + input, :select)
-# #   end
-# #
-# #   def extended_upload_column_field(object, label, method, options = {})
-# #     label = extended_label(object, label, method)
-# #     input = object.upload_column_field(method, options)
-# #     errors = error_message_on(object.object_name, method)
-# #
-# #     extended_input(errors + label + input, :text)
-# #   end
-#
-#
-#
-#   def remote_form_for(record_or_name_or_array, *args, &proc)
-#     options = args.extract_options!
-#
-#     if options[:html] && options[:html][:multipart]
-#       @_multipart_remote_form_for_id = (@_multipart_remote_form_for_id || 0) + 1
-#       target = "upload_frame_#{@_multipart_remote_form_for_id}"
-#
-#       options[:html] ||= {}
-#       options[:html][:method] = :post
-#       #options[:html][:multipart] = true
-#       options[:html][:target] = target
-#
-#       options[:html][:onsubmit] = (options[:html][:onsubmit] ? options[:html][:onsubmit] + "; " : "") + 'this.insert(\'<input type="hidden" name="format" value="js" />\');'
-#
-#       concat "<iframe id=\"#{target}\" name=\"#{target}\" style=\"width:1px;height:1px;border:0px;display:none;\" src=\"about:blank\"></iframe>", proc.binding
-#       args << options
-#       form_for(record_or_name_or_array, options, &proc)
-#     else
-#       old_remote_form_for = ActionView::Helpers::PrototypeHelper.instance_method(:remote_form_for).bind(self)
-#       args << options
-#       old_remote_form_for.call(record_or_name_or_array, *args, &proc)
-#     end
-#   end
+    extended_input(html, %w(file imageUpload))
+  end
+
+  def extended_upload_file_field(object, method, options = {})
+    label_text = options.delete(:label)
+
+    object_self = case object
+      when String, Symbol
+        instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
+      else
+        object
+    end
+
+    file = object_self ? object_self.send(method) : nil
+
+    html = extended_label(object, method, label_text)
+    html << link_to(File.basename(file.url), file.url) if file
+    html << upload_column_field(object, method, options)
+    html << extended_error_message_on(object, method, options)
+
+    extended_input(html, %w(file fileUpload))
+  end
 
 private
 
@@ -184,8 +112,8 @@ private
     end
   end
 
-  def extended_input(content, klasses, options = {})
-    klasses = klasses.to_a.map{ |klass| "#{klass}Field" } + ['field']
+  def extended_input(content, types, options = {})
+    klasses = types.to_a.map{ |type| "#{type}Field" } + ['field']
     content_tag(:div, content, :class => klasses.join(' '))
   end
 end
