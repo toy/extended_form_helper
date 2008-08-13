@@ -1,8 +1,24 @@
 module ExtendedFormHelper
+  # ==== Example
+  #   extended_submit_tag('hello')
+  #   # <div class="submitField field">
+  #   #   <input name="commit" type="submit" value="hello" />
+  #   # </div>
   def extended_submit_tag(value = 'Save changes', options = {})
     extended_input(submit_tag(value, options), 'submit')
   end
 
+  # ==== Examples
+  #   extended_text_field(:obj, :column)
+  #   # <div class="textField field">
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="text" value="qwerty" />
+  #   # </div>
+  #
+  #   extended_text_field(:obj, :column, :label => 'hello')
+  #   # <div class="textField field">
+  #   #   <label for="obj_column">hello</label>
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="text" value="qwerty" />
+  #   # </div>
   def extended_text_field(object, method, options = {})
     label_text = options.delete(:label)
 
@@ -13,6 +29,17 @@ module ExtendedFormHelper
     extended_input(html, 'text')
   end
 
+  # ==== Examples
+  #   extended_file_field(:obj, :column)
+  #   # <div class="fileField field">
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
+  #   # </div>
+  #
+  #   extended_file_field(:obj, :column, :label => 'hello')
+  #   # <div class="fileField field">
+  #   #   <label for="obj_column">hello</label>
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
+  #   # </div>
   def extended_file_field(object, method, options = {})
     label_text = options.delete(:label)
 
@@ -23,6 +50,17 @@ module ExtendedFormHelper
     extended_input(html, 'file')
   end
 
+  # ==== Examples
+  #   extended_text_area(:obj, :column)
+  #   # <div class="textAreaField field">
+  #   #   <textarea cols="40" id="obj_column" name="obj[column]" rows="20">qwerty</textarea>
+  #   # </div>
+  #
+  #   extended_text_area(:obj, :column, :label => 'hello')
+  #   # <div class="textAreaField field">
+  #   #   <label for="obj_column">hello</label>
+  #   #   <textarea cols="40" id="obj_column" name="obj[column]" rows="20">qwerty</textarea>
+  #   # </div>
   def extended_text_area(object, method, options = {})
     label_text = options.delete(:label)
 
@@ -33,6 +71,23 @@ module ExtendedFormHelper
     extended_input(html, 'textArea')
   end
 
+  # By default will not insert password
+  # ==== Examples
+  #   extended_password_field(:obj, :column)
+  #   # <div class="passwordField field">
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="password" value="" />
+  #   # </div>
+  #
+  #   extended_password_field(:obj, :column, :label => 'hello')
+  #   # <div class="passwordField field">
+  #   #   <label for="obj_column">hello</label>
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="password" value="" />
+  #   # </div>
+  #
+  #   extended_password_field(:obj, :column, :value => 'asdfgh')
+  #   # <div class="passwordField field">
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="password" value="asdfgh" />
+  #   # </div>
   def extended_password_field(object, method, options = {})
     label_text = options.delete(:label)
 
@@ -45,6 +100,19 @@ module ExtendedFormHelper
     extended_input(html, 'password')
   end
 
+  # ==== Examples
+  #   extended_check_box(:obj, :column)
+  #   # <div class="checkBoxField field">
+  #   #   <input id="obj_column" name="obj[column]" type="checkbox" value="1" />
+  #   #   <input name="obj[column]" type="hidden" value="0" />
+  #   # </div>
+  #
+  #   extended_check_box(:obj, :column, :label => 'hello')
+  #   # <div class="checkBoxField field">
+  #   #   <input id="obj_column" name="obj[column]" type="checkbox" value="1" />
+  #   #   <input name="obj[column]" type="hidden" value="0" />
+  #   #   <label for="obj_column">hello</label>
+  #   # </div>
   def extended_check_box(object, method, options = {}, checked_value = '1', unchecked_value = '0')
     label_text = options.delete(:label)
 
@@ -55,6 +123,29 @@ module ExtendedFormHelper
     extended_input(html, 'checkBox')
   end
 
+  # :preview_version sets thumbnail type to show (if skipped or invalid main version is used)
+  # ==== Examples
+  #   extended_upload_image_field(:obj, :column)
+  #   # <div class="fileField imageUploadField field">
+  #   #   <img alt="Qwerty" src="/images/tmp/asdfgh.jpg" />
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
+  #   #   <input id="obj_column_temp" name="obj[column_temp]" type="hidden" value="asdfgh.jpg" />
+  #   # </div>
+  #
+  #   extended_upload_image_field(:obj, :column, :label => 'hello')
+  #   # <div class="fileField imageUploadField field">
+  #   #   <label for="obj_column">hello</label>
+  #   #   <img alt="Qwerty" src="/images/tmp/asdfgh.jpg" />
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
+  #   #   <input id="obj_column_temp" name="obj[column_temp]" type="hidden" value="asdfgh.jpg" />
+  #   # </div>
+  #
+  #   extended_upload_image_field(:obj, :column, :preview_version => :small)
+  #   # <div class="fileField imageUploadField field">
+  #   #   <img alt="Qwerty" src="/images/tmp/asdfgh-small.jpg" />
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
+  #   #   <input id="obj_column_temp" name="obj[column_temp]" type="hidden" value="asdfgh.jpg" />
+  #   # </div>
   def extended_upload_image_field(object, method, options = {})
     label_text = options.delete(:label)
 
@@ -64,7 +155,7 @@ module ExtendedFormHelper
       else
         object
     end
-    
+
     image = object_self ? object_self.send(method) : nil
     version = options.delete(:preview_version)
     image = image.send(version) if image && version
@@ -77,6 +168,21 @@ module ExtendedFormHelper
     extended_input(html, %w(file imageUpload))
   end
 
+  # ==== Examples
+  #   extended_upload_file_field(:obj, :column)
+  #   # <div class="fileField fileUploadField field">
+  #   #   <a href="/files/asdfgh.doc">asdfgh.doc</a>
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
+  #   #   <input id="obj_column_temp" name="obj[column_temp]" type="hidden" value="asdfgh" />
+  #   # </div>
+  #
+  #   extended_upload_file_field(:obj, :column, :label => 'hello')
+  #   # <div class="fileField fileUploadField field">
+  #   #   <label for="obj_column">hello</label>
+  #   #   <a href="/files/asdfgh.doc">asdfgh.doc</a>
+  #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
+  #   #   <input id="obj_column_temp" name="obj[column_temp]" type="hidden" value="asdfgh" />
+  #   # </div>
   def extended_upload_file_field(object, method, options = {})
     label_text = options.delete(:label)
 
@@ -118,25 +224,25 @@ private
   end
 end
 
-ActionView::Helpers::FormBuilder.class_eval do
+# All methods are implemented for +form_for+ version usage
+class ActionView::Helpers::FormBuilder
   %w(extended_text_field extended_text_area extended_password_field extended_file_field extended_upload_image_field extended_upload_file_field).each do |selector|
     self.field_helpers << selector
     class_eval %Q{
       def #{selector}(method, options = {})
-        @template.send(#{selector.inspect}, @object_name, method, objectify_options(options))
+        @template.#{selector}(@object_name, method, objectify_options(options))
       end
     }, __FILE__, __LINE__
   end
 
   self.field_helpers << 'extended_check_box'
-
   def extended_check_box(method, options = {}, checked_value = '1', unchecked_value = '0')
     @template.extended_check_box(@object_name, method, objectify_options(options), checked_value, unchecked_value)
   end
 
   self.field_helpers << 'extended_submit'
-
   def extended_submit(value = "Save changes", options = {})
     @template.extended_submit_tag(value, options.reverse_merge(:id => "#{object_name}_submit"))
   end
+
 end

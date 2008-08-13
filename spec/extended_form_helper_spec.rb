@@ -249,7 +249,7 @@ describe ExtendedFormHelper do
   end
 
   include ActionView::Helpers::UrlHelper
-  it "should return upload_column_field for image" do
+  it "should return upload_column_field for file" do
     @obj.stub!(:column).and_return(nil)
     @obj.stub!(:column_temp).and_return('')
     html = extended_upload_file_field(:obj, :column)
@@ -260,7 +260,7 @@ describe ExtendedFormHelper do
       without_error
     end
   end
-  it "should return upload_column_field for image with label" do
+  it "should return upload_column_field for file with label" do
     @obj.stub!(:column).and_return(nil)
     @obj.stub!(:column_temp).and_return('')
     html = extended_upload_file_field(:obj, :column, :label => 'hello')
@@ -271,7 +271,7 @@ describe ExtendedFormHelper do
       without_error
     end
   end
-  it "should return upload_column_field for image with error" do
+  it "should return upload_column_field for file with error" do
     @errors.stub!(:on).and_return('error')
     @obj.stub!(:column).and_return(nil)
     @obj.stub!(:column_temp).and_return('')
@@ -283,7 +283,7 @@ describe ExtendedFormHelper do
       with_error
     end
   end
-  it "should return upload_column_field for image with link to file" do
+  it "should return upload_column_field for file with link to file" do
     @obj.stub!(:column).and_return(mock('file', :url => '/files/qwerty'))
     @obj.stub!(:column_temp).and_return('qwerty')
     html = extended_upload_file_field(:obj, :column)
@@ -597,7 +597,7 @@ describe ExtendedFormHelper, 'with form_for' do
   end
 
   include ActionView::Helpers::UrlHelper
-  it "should return upload_column_field for image" do
+  it "should return upload_column_field for file" do
     @obj.stub!(:column).and_return(nil)
     @obj.stub!(:column_temp).and_return('')
     _erbout = ''
@@ -611,7 +611,7 @@ describe ExtendedFormHelper, 'with form_for' do
       without_error
     end
   end
-  it "should return upload_column_field for image with label" do
+  it "should return upload_column_field for file with label" do
     @obj.stub!(:column).and_return(nil)
     @obj.stub!(:column_temp).and_return('')
     _erbout = ''
@@ -625,7 +625,7 @@ describe ExtendedFormHelper, 'with form_for' do
       without_error
     end
   end
-  it "should return upload_column_field for image with error" do
+  it "should return upload_column_field for file with error" do
     @errors.stub!(:on).and_return('error')
     @obj.stub!(:column).and_return(nil)
     @obj.stub!(:column_temp).and_return('')
@@ -640,7 +640,7 @@ describe ExtendedFormHelper, 'with form_for' do
       with_error
     end
   end
-  it "should return upload_column_field for image with link to file" do
+  it "should return upload_column_field for file with link to file" do
     @obj.stub!(:column).and_return(mock('file', :url => '/files/qwerty'))
     @obj.stub!(:column_temp).and_return('qwerty')
     _erbout = ''
