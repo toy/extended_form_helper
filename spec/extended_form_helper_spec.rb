@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../../../spec/spec_helper'
+require File.dirname(__FILE__) + '/spec_helper'
 
 module FieldHelperMethods
   def have_form_with_field_div(*types)
