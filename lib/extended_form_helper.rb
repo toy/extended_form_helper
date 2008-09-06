@@ -149,7 +149,7 @@ module ExtendedFormHelper
   def extended_upload_image_field(object, method, options = {})
     label_text = options.delete(:label)
 
-    object_self = case object
+    object_self = options[:object] || case object
       when String, Symbol
         instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
       else
@@ -186,7 +186,7 @@ module ExtendedFormHelper
   def extended_upload_file_field(object, method, options = {})
     label_text = options.delete(:label)
 
-    object_self = case object
+    object_self = options[:object] || case object
       when String, Symbol
         instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
       else
