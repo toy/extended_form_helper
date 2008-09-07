@@ -33,6 +33,7 @@ describe ExtendedFormHelper do
   include ActionView::Helpers::FormHelper
   include ActionView::Helpers::FormTagHelper
   include ActionView::Helpers::TagHelper
+  include ActionView::Helpers::DateHelper
   include FieldHelperMethods
 
   before do
@@ -296,6 +297,33 @@ describe ExtendedFormHelper do
     end
   end
 
+  it "should return date_select" do
+    @obj.stub!(:column).and_return(Time.now)
+    html = extended_date_select(:obj, :column)
+    # html.should have_field_div('date') do
+    #   without_label
+    #   with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
+    #   without_error
+    # end
+  end
+  # it "should return text_field with label" do
+  #   html = extended_text_field(:obj, :column, :label => 'hello')
+  #   html.should have_field_div('text') do
+  #     with_label
+  #     with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
+  #     without_error
+  #   end
+  # end
+  # it "should return text_field with error" do
+  #   @errors.stub!(:on).and_return('error')
+  #   html = extended_text_field(:obj, :column)
+  #   html.should have_field_div('text') do
+  #     without_label
+  #     with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
+  #     with_error
+  #   end
+  # end
+
 end
 
 describe ExtendedFormHelper, 'with form_for' do
@@ -304,6 +332,7 @@ describe ExtendedFormHelper, 'with form_for' do
   include ActionView::Helpers::FormHelper
   include ActionView::Helpers::FormTagHelper
   include ActionView::Helpers::TagHelper
+  include ActionView::Helpers::DateHelper
   include ActionView::Helpers::TextHelper
   include FieldHelperMethods
 
@@ -654,6 +683,19 @@ describe ExtendedFormHelper, 'with form_for' do
       with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=qwerty]')
       without_error
     end
+  end
+
+  it "should return date_select" do
+    @obj.stub!(:column).and_return(Time.now)
+    _erbout = ''
+    form_for(:obj) do |f|
+      _erbout << f.extended_date_select(:column)
+    end
+    # _erbout.should have_form_with_field_div('text') do
+    #   without_label
+    #   with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
+    #   without_error
+    # end
   end
 
 end

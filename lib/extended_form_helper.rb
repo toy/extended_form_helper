@@ -203,6 +203,36 @@ module ExtendedFormHelper
     extended_input(html, %w(file fileUpload))
   end
 
+  def extended_date_select(object, method, options = {}, html_options = {})
+    label_text = options.delete(:label)
+
+    html = extended_label(object, method, label_text)
+    html << date_select(object, method, options, html_options)
+    html << extended_error_message_on(object, method, options)
+
+    extended_input(html, 'date')
+  end
+
+  def extended_time_select(object, method, options = {}, html_options = {})
+    label_text = options.delete(:label)
+
+    html = extended_label(object, method, label_text)
+    html << time_select(object, method, options, html_options)
+    html << extended_error_message_on(object, method, options)
+
+    extended_input(html, 'time')
+  end
+
+  def extended_datetime_select(object, method, options = {}, html_options = {})
+    label_text = options.delete(:label)
+
+    html = extended_label(object, method, label_text)
+    html << datetime_select(object, method, options, html_options)
+    html << extended_error_message_on(object, method, options)
+
+    extended_input(html, 'dateTime')
+  end
+
 private
 
   def extended_label(object, method, text)
@@ -243,6 +273,15 @@ class ActionView::Helpers::FormBuilder
   self.field_helpers << 'extended_submit'
   def extended_submit(value = "Save changes", options = {})
     @template.extended_submit_tag(value, options.reverse_merge(:id => "#{object_name}_submit"))
+  end
+
+  %w(date time datetime).each do |type|
+    self.field_helpers << "extended_#{type}_select"
+    class_eval %Q{
+      def extended_#{type}_select(method, options = {}, html_options = {})
+        @template.extended_#{type}_select(@object_name, method, objectify_options(options), html_options)
+      end
+    }, __FILE__, __LINE__
   end
 
 end
