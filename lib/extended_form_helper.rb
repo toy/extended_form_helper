@@ -233,6 +233,26 @@ module ExtendedFormHelper
     extended_input(html, 'dateTime')
   end
 
+  def extended_collection_select(object, method, collection, value_method, text_method, options = {}, html_options = {})
+    label_text = options.delete(:label)
+
+    html = extended_label(object, method, label_text)
+    html << collection_select(object, method, collection, value_method, text_method, options, html_options)
+    html << extended_error_message_on(object, method, options)
+
+    extended_input(html, 'select')
+  end
+
+  def extended_select(object, method, choices, options = {}, html_options = {})
+    label_text = options.delete(:label)
+
+    html = extended_label(object, method, label_text)
+    html << select(object, method, choices, options, html_options)
+    html << extended_error_message_on(object, method, options)
+
+    extended_input(html, 'select')
+  end
+
 private
 
   def extended_label(object, method, text)
@@ -282,6 +302,16 @@ class ActionView::Helpers::FormBuilder
         @template.extended_#{type}_select(@object_name, method, objectify_options(options), html_options)
       end
     }, __FILE__, __LINE__
+  end
+
+  self.field_helpers << 'extended_collection_select'
+  def extended_collection_select(method, collection, value_method, text_method, options = {}, html_options = {})
+    @template.extended_collection_select(@object_name, method, collection, value_method, text_method, objectify_options(options), html_options)
+  end
+
+  self.field_helpers << 'extended_select'
+  def extended_select(method, choices, options = {}, html_options = {})
+    @template.extended_select(@object_name, method, choices, objectify_options(options), html_options)
   end
 
 end
