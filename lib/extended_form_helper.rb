@@ -149,12 +149,7 @@ module ExtendedFormHelper
   def extended_upload_image_field(object, method, options = {})
     label_text = options.delete(:label)
 
-    object_self = options[:object] || case object
-      when String, Symbol
-        instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
-      else
-        object
-    end
+    object_self = extended_object_get_self(object, options)
 
     image = object_self ? object_self.send(method) : nil
     version = options.delete(:preview_version)
@@ -186,12 +181,7 @@ module ExtendedFormHelper
   def extended_upload_file_field(object, method, options = {})
     label_text = options.delete(:label)
 
-    object_self = options[:object] || case object
-      when String, Symbol
-        instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
-      else
-        object
-    end
+    object_self = extended_object_get_self(object, options)
 
     file = object_self ? object_self.send(method) : nil
 
@@ -271,6 +261,15 @@ private
   def extended_input(content, types, options = {})
     klasses = types.to_a.map{ |type| "#{type}Field" } + ['field']
     content_tag(:div, content, :class => klasses.join(' '))
+  end
+  
+  def extended_object_get_self(object, options = {})
+    options[:object] || case object
+      when String, Symbol
+        instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
+      else
+        object
+    end
   end
 end
 
