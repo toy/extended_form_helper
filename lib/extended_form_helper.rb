@@ -243,6 +243,18 @@ module ExtendedFormHelper
     extended_input(html, 'select')
   end
 
+  def error_messages_on(object, method, prepend_text = "", append_text = "", css_class = "formError")
+    if (obj = (object.respond_to?(:errors) ? object : instance_variable_get("@#{object}"))) && (errors = obj.errors.on(method))
+      if errors.is_a?(Array)
+        content_tag(:ul, errors.map{ |error| content_tag(:li, "#{prepend_text}#{error}#{append_text}") }, :class => css_class)
+      else
+        content_tag("div", "#{prepend_text}#{errors}#{append_text}", :class => css_class)
+      end
+    else
+      ''
+    end
+  end
+
 private
 
   def extended_label(object, method, text)
@@ -252,9 +264,9 @@ private
   def extended_error_message_on(object, method, options = {})
     case object
       when String, Symbol
-        error_message_on(object.to_s.sub(/\[\]$/, ''), method) # rescue ''
+        error_messages_on(object.to_s.sub(/\[\]$/, ''), method) # rescue ''
       else
-        error_message_on(object, method)
+        error_messages_on(object, method)
     end
   end
 
@@ -262,7 +274,7 @@ private
     klasses = types.to_a.map{ |type| "#{type}Field" } + ['field']
     content_tag(:div, content, :class => klasses.join(' '))
   end
-  
+
   def extended_object_get_self(object, options = {})
     options[:object] || case object
       when String, Symbol
