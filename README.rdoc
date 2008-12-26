@@ -6,11 +6,11 @@ Helper methods to ease form creation
 Example
 =======
 
-<%- form_for :user, :url => signup_path, :html => {:multipart => true} do |f| -%>
-	<%= f.extended_text_field(:login, :label => 'login') %>
-	<%= f.extended_text_field(:email, :label => 'e-mail') %>
-	<%= f.extended_password_field(:password, :label => 'password') %>
-	<%= f.extended_password_field(:password_confirmation, :label => 'password confirmation') %>
-	<%= f.extended_check_box(:accept, :label => 'I agree to the terms and conditions') %>
-	<%= f.extended_submit 'Register' %>
-<%- end -%>
+  <%- form_for :user, :url => signup_path, :html => {:multipart => true} do |f| -%>
+  	<%= f.extended_text_field(:login, :label => 'login') %>
+  	<%= f.extended_text_field(:email, :label => 'e-mail') %>
+  	<%= f.extended_password_field(:password, :label => 'password') %>
+  	<%= f.extended_password_field(:password_confirmation, :label => 'password confirmation') %>
+  	<%= f.extended_check_box(:accept, :label => 'I agree to the terms and conditions') %>
+  	<%= f.extended_submit 'Register' %>
+  <%- end -%>
