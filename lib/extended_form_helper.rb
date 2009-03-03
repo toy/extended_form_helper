@@ -23,8 +23,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << text_field(object, method, options)
+    html = extended_label(object_name, method, label_text)
+    html << text_field(object_name, method, options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'text')
@@ -45,8 +45,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << file_field(object, method, options)
+    html = extended_label(object_name, method, label_text)
+    html << file_field(object_name, method, options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'file')
@@ -67,8 +67,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << text_area(object, method, options)
+    html = extended_label(object_name, method, label_text)
+    html << text_area(object_name, method, options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'textArea')
@@ -97,8 +97,8 @@ module ExtendedFormHelper
 
     options[:value] = '' unless options[:value]
 
-    html = extended_label(object, method, label_text)
-    html << password_field(object, method, options)
+    html = extended_label(object_name, method, label_text)
+    html << password_field(object_name, method, options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'password')
@@ -121,8 +121,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = check_box(object, method, options, checked_value, unchecked_value)
-    html << extended_label(object, method, label_text)
+    html = check_box(object_name, method, options, checked_value, unchecked_value)
+    html << extended_label(object_name, method, label_text)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'checkBox')
@@ -160,9 +160,9 @@ module ExtendedFormHelper
     version = options.delete(:preview_version)
     image = image.send(version) if image && version
 
-    html = extended_label(object, method, label_text)
+    html = extended_label(object_name, method, label_text)
     html << image_tag(image.url) if image
-    html << upload_column_field(object, method, options)
+    html << upload_column_field(object_name, method, options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, %w(file imageUpload))
@@ -190,9 +190,9 @@ module ExtendedFormHelper
     object_self = object.respond_to?(:errors) ? object : instance_variable_get("@#{object}")
     file = object_self ? object_self.send(method) : nil
 
-    html = extended_label(object, method, label_text)
+    html = extended_label(object_name, method, label_text)
     html << link_to(file.url, file.url) if file
-    html << upload_column_field(object, method, options)
+    html << upload_column_field(object_name, method, options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, %w(file fileUpload))
@@ -202,8 +202,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << date_select(object, method, options, html_options)
+    html = extended_label(object_name, method, label_text)
+    html << date_select(object_name, method, options, html_options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'date')
@@ -213,8 +213,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << time_select(object, method, options, html_options)
+    html = extended_label(object_name, method, label_text)
+    html << time_select(object_name, method, options, html_options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'time')
@@ -224,8 +224,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << datetime_select(object, method, options, html_options)
+    html = extended_label(object_name, method, label_text)
+    html << datetime_select(object_name, method, options, html_options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'dateTime')
@@ -235,8 +235,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << collection_select(object, method, collection, value_method, text_method, options, html_options)
+    html = extended_label(object_name, method, label_text)
+    html << collection_select(object_name, method, collection, value_method, text_method, options, html_options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'select')
@@ -246,8 +246,8 @@ module ExtendedFormHelper
     object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    html = extended_label(object, method, label_text)
-    html << select(object, method, choices, options, html_options)
+    html = extended_label(object_name, method, label_text)
+    html << select(object_name, method, choices, options, html_options)
     html << error_messages_on(object, method, options)
 
     extended_input(html, 'select')
