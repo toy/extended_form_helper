@@ -19,12 +19,13 @@ module ExtendedFormHelper
   #   #   <label for="obj_column">hello</label>
   #   #   <input id="obj_column" name="obj[column]" size="30" type="text" value="qwerty" />
   #   # </div>
-  def extended_text_field(object, method, options = {})
+  def extended_text_field(object_name, method, options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << text_field(object, method, options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'text')
   end
@@ -40,12 +41,13 @@ module ExtendedFormHelper
   #   #   <label for="obj_column">hello</label>
   #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
   #   # </div>
-  def extended_file_field(object, method, options = {})
+  def extended_file_field(object_name, method, options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << file_field(object, method, options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'file')
   end
@@ -61,12 +63,13 @@ module ExtendedFormHelper
   #   #   <label for="obj_column">hello</label>
   #   #   <textarea cols="40" id="obj_column" name="obj[column]" rows="20">qwerty</textarea>
   #   # </div>
-  def extended_text_area(object, method, options = {})
+  def extended_text_area(object_name, method, options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << text_area(object, method, options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'textArea')
   end
@@ -88,14 +91,15 @@ module ExtendedFormHelper
   #   # <div class="passwordField field">
   #   #   <input id="obj_column" name="obj[column]" size="30" type="password" value="asdfgh" />
   #   # </div>
-  def extended_password_field(object, method, options = {})
+  def extended_password_field(object_name, method, options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     options[:value] = '' unless options[:value]
 
     html = extended_label(object, method, label_text)
     html << password_field(object, method, options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'password')
   end
@@ -113,12 +117,13 @@ module ExtendedFormHelper
   #   #   <input name="obj[column]" type="hidden" value="0" />
   #   #   <label for="obj_column">hello</label>
   #   # </div>
-  def extended_check_box(object, method, options = {}, checked_value = '1', unchecked_value = '0')
+  def extended_check_box(object_name, method, options = {}, checked_value = '1', unchecked_value = '0')
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = check_box(object, method, options, checked_value, unchecked_value)
     html << extended_label(object, method, label_text)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'checkBox')
   end
@@ -146,11 +151,11 @@ module ExtendedFormHelper
   #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
   #   #   <input id="obj_column_temp" name="obj[column_temp]" type="hidden" value="asdfgh.jpg" />
   #   # </div>
-  def extended_upload_image_field(object, method, options = {})
+  def extended_upload_image_field(object_name, method, options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    object_self = extended_object_get_self(object, options)
-
+    object_self = object.respond_to?(:errors) ? object : instance_variable_get("@#{object}")
     image = object_self ? object_self.send(method) : nil
     version = options.delete(:preview_version)
     image = image.send(version) if image && version
@@ -158,7 +163,7 @@ module ExtendedFormHelper
     html = extended_label(object, method, label_text)
     html << image_tag(image.url) if image
     html << upload_column_field(object, method, options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, %w(file imageUpload))
   end
@@ -178,77 +183,84 @@ module ExtendedFormHelper
   #   #   <input id="obj_column" name="obj[column]" size="30" type="file" />
   #   #   <input id="obj_column_temp" name="obj[column_temp]" type="hidden" value="asdfgh" />
   #   # </div>
-  def extended_upload_file_field(object, method, options = {})
+  def extended_upload_file_field(object_name, method, options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
-    object_self = extended_object_get_self(object, options)
-
+    object_self = object.respond_to?(:errors) ? object : instance_variable_get("@#{object}")
     file = object_self ? object_self.send(method) : nil
 
     html = extended_label(object, method, label_text)
-    html << link_to(File.basename(file.url), file.url) if file
+    html << link_to(file.url, file.url) if file
     html << upload_column_field(object, method, options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, %w(file fileUpload))
   end
 
-  def extended_date_select(object, method, options = {}, html_options = {})
+  def extended_date_select(object_name, method, options = {}, html_options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << date_select(object, method, options, html_options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'date')
   end
 
-  def extended_time_select(object, method, options = {}, html_options = {})
+  def extended_time_select(object_name, method, options = {}, html_options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << time_select(object, method, options, html_options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'time')
   end
 
-  def extended_datetime_select(object, method, options = {}, html_options = {})
+  def extended_datetime_select(object_name, method, options = {}, html_options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << datetime_select(object, method, options, html_options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'dateTime')
   end
 
-  def extended_collection_select(object, method, collection, value_method, text_method, options = {}, html_options = {})
+  def extended_collection_select(object_name, method, collection, value_method, text_method, options = {}, html_options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << collection_select(object, method, collection, value_method, text_method, options, html_options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'select')
   end
 
-  def extended_select(object, method, choices, options = {}, html_options = {})
+  def extended_select(object_name, method, choices, options = {}, html_options = {})
+    object = options[:object] || object_name
     label_text = options.delete(:label)
 
     html = extended_label(object, method, label_text)
     html << select(object, method, choices, options, html_options)
-    html << extended_error_message_on(object, method, options)
+    html << error_messages_on(object, method, options)
 
     extended_input(html, 'select')
   end
 
-  def error_messages_on(object, method, prepend_text = "", append_text = "", css_class = "formError")
+  def error_messages_on(object, method, options = {})
+    options.reverse_merge!(:prepend_text => '', :append_text => '', :css_class => 'formError')
+
     if (obj = (object.respond_to?(:errors) ? object : instance_variable_get("@#{object}"))) && (errors = obj.errors.on(method))
       if errors.is_a?(Array)
-        content_tag(:ul, errors.map{ |error| content_tag(:li, "#{prepend_text}#{error}#{append_text}") }, :class => css_class)
+        content_tag(:ul, errors.map{ |error| content_tag(:li, "#{options[:prepend_text]}#{error}#{options[:append_text]}", :class => options[:css_class]) }, :class => options[:css_class].pluralize)
       else
-        content_tag("div", "#{prepend_text}#{errors}#{append_text}", :class => css_class)
+        content_tag(:div, "#{options[:prepend_text]}#{errors}#{options[:append_text]}", :class => options[:css_class])
       end
     else
       ''
@@ -261,27 +273,9 @@ private
     text.blank? ? '' : label(object, method, text)
   end
 
-  def extended_error_message_on(object, method, options = {})
-    case object
-      when String, Symbol
-        error_messages_on(object.to_s.sub(/\[\]$/, ''), method) # rescue ''
-      else
-        error_messages_on(object, method)
-    end
-  end
-
   def extended_input(content, types, options = {})
     klasses = types.to_a.map{ |type| "#{type}Field" } + ['field']
     content_tag(:div, content, :class => klasses.join(' '))
-  end
-
-  def extended_object_get_self(object, options = {})
-    options[:object] || case object
-      when String, Symbol
-        instance_variable_get("@#{object.to_s.sub(/\[\]$/, '')}") rescue nil
-      else
-        object
-    end
   end
 end
 
@@ -325,4 +319,8 @@ class ActionView::Helpers::FormBuilder
     @template.extended_select(@object_name, method, choices, objectify_options(options), html_options)
   end
 
+  self.field_helpers << 'error_messages_on'
+  def error_messages_on(method, options = {})
+    @template.error_messages_on(@object, method, objectify_options(options))
+  end
 end
