@@ -253,6 +253,23 @@ module ExtendedFormHelper
     extended_input(html, 'select')
   end
 
+  def extended_radio_button_select(object_name, method, choices, options = {}, html_options = {})
+    object = options[:object] || object_name
+    label_text = options.delete(:label)
+
+    html = extended_label(object_name, method, label_text)
+
+    choices = choices.to_a if Hash === choices
+    html << choices.inject([]) do |radio_buttons, element|
+      text, value = option_text_and_value(element)
+      radio_buttons << "<label>#{radio_button(object_name, method, value, options)} #{h(text)}</label>"
+    end.join("\n")
+
+    html << error_messages_on(object, method, options)
+
+    extended_input(html, 'radioButtonSelect')
+  end
+
   def error_messages_on(object, method, options = {})
     options.reverse_merge!(:prepend_text => '', :append_text => '', :css_class => 'formError')
 
@@ -317,6 +334,11 @@ class ActionView::Helpers::FormBuilder
   self.field_helpers << 'extended_select'
   def extended_select(method, choices, options = {}, html_options = {})
     @template.extended_select(@object_name, method, choices, objectify_options(options), html_options)
+  end
+
+  self.field_helpers << 'extended_radio_button_select'
+  def extended_radio_button_select(method, choices, options = {}, html_options = {})
+    @template.extended_radio_button_select(@object_name, method, choices, objectify_options(options), html_options)
   end
 
   self.field_helpers << 'error_messages_on'
