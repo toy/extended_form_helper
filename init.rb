@@ -1,2 +1,1 @@
-# require "extended_form_helper"
-ActionView::Base.send :include, ExtendedFormHelper
+ActionView::Base.send :include, ActionView::Helpers::ExtendedFormHelper

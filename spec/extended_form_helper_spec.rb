@@ -1,319 +1,34 @@
 require File.dirname(__FILE__) + '/spec_helper'
 
-module FieldHelperMethods
-  def have_form_with_field_div(*types)
-    klasses = types.to_a.map{ |type| ".#{type}Field" }
-    have_tag('form > div%s' % klasses.join) do
-      yield
+module Spec
+  module Matchers
+    def have_same_dom(expected)
+      Matcher.new :have_same_dom, expected do |expected|
+        def clean_white_spece(s)
+          s.strip.gsub(/>\s+</, '><')
+        end
+
+        match do |actual|
+          expected_dom = HTML::Document.new(clean_white_spece(expected)).root
+          actual_dom   = HTML::Document.new(clean_white_spece(actual)).root
+          expected_dom == actual_dom
+        end
+      end
     end
-  end
-  def have_field_div(*types)
-    klasses = types.to_a.map{ |type| ".#{type}Field" }
-    have_tag('div%s' % klasses.join) do
-      yield
-    end
-  end
-  def with_label
-    with_tag('label[for=obj_column]', 'hello')
-  end
-  def without_label
-    without_tag('label')
-  end
-  def with_error
-    with_tag('div.formError', 'error')
-  end
-  def without_error
-    without_tag('div.formError')
   end
 end
 
 describe ExtendedFormHelper do
   include ExtendedFormHelper
-  include ActionView::Helpers::FormHelper
-  include ActionView::Helpers::FormTagHelper
-  include ActionView::Helpers::TagHelper
-  include ActionView::Helpers::AssetTagHelper
-  include ActionView::Helpers::UrlHelper
-  include UploadColumnHelper
-  include FieldHelperMethods
-
-  before do
-    @obj = mock('obj', :column => 'qwerty', :object_name => 'obj', :to_s => 'obj')
-    @errors = mock('errors', :on => nil)
-    @obj.stub!(:errors).and_return(@errors)
-  end
-
-  it "should return submit_tag" do
-    html = extended_submit_tag('hello')
-    html.should have_field_div('submit') do
-      with_tag('input[name=commit][value=hello][type=submit]')
-    end
-  end
-
-  it "should return text_field" do
-    html = extended_text_field(:obj, :column)
-    html.should have_field_div('text') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
-      without_error
-    end
-  end
-  it "should return text_field with label" do
-    html = extended_text_field(:obj, :column, :label => 'hello')
-    html.should have_field_div('text') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
-      without_error
-    end
-  end
-  it "should return text_field with error" do
-    @errors.stub!(:on).and_return('error')
-    html = extended_text_field(:obj, :column)
-    html.should have_field_div('text') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
-      with_error
-    end
-  end
-
-  it "should return file_field" do
-    html = extended_file_field(:obj, :column)
-    html.should have_field_div('file') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      without_error
-    end
-  end
-  it "should return file_field with label" do
-    html = extended_file_field(:obj, :column, :label => 'hello')
-    html.should have_field_div('file') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      without_error
-    end
-  end
-  it "should return file_field with error" do
-    @errors.stub!(:on).and_return('error')
-    html = extended_file_field(:obj, :column)
-    html.should have_field_div('file') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_error
-    end
-  end
-
-  it "should return text_area" do
-    html = extended_text_area(:obj, :column)
-    html.should have_field_div('textArea') do
-      without_label
-      with_tag('textarea#obj_column[name=\'obj[column]\']', 'qwerty')
-      without_error
-    end
-  end
-  it "should return text_area with label" do
-    html = extended_text_area(:obj, :column, :label => 'hello')
-    html.should have_field_div('textArea') do
-      with_label
-      with_tag('textarea#obj_column[name=\'obj[column]\']', 'qwerty')
-      without_error
-    end
-  end
-  it "should return text_area with error" do
-    @errors.stub!(:on).and_return('error')
-    html = extended_text_area(:obj, :column)
-    html.should have_field_div('textArea') do
-      without_label
-      with_tag('textarea#obj_column[name=\'obj[column]\']', 'qwerty')
-      with_error
-    end
-  end
-
-  it "should return password_field (with blank value)" do
-    html = extended_password_field(:obj, :column)
-    html.should have_field_div('password') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=][type=password]')
-      without_error
-    end
-  end
-  it "should return password_field (with blank value) with label" do
-    html = extended_password_field(:obj, :column, :label => 'hello')
-    html.should have_field_div('password') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=][type=password]')
-      without_error
-    end
-  end
-  it "should return password_field (with blank value) with error" do
-    @errors.stub!(:on).and_return('error')
-    html = extended_password_field(:obj, :column)
-    html.should have_field_div('password') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=][type=password]')
-      with_error
-    end
-  end
-  it "should return password_field (with value)" do
-    html = extended_password_field(:obj, :column, :value => 'asdfgh')
-    html.should have_field_div('password') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=asdfgh][type=password]')
-      without_error
-    end
-  end
-
-  it "should return check_box" do
-    html = extended_check_box(:obj, :column)
-    html.should have_field_div('checkBox') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      without_error
-    end
-  end
-  it "should return check_box with label" do
-    html = extended_check_box(:obj, :column, :label => 'hello')
-    html.should have_field_div('checkBox') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      without_error
-    end
-  end
-  it "should return check_box with error" do
-    @errors.stub!(:on).and_return('error')
-    html = extended_check_box(:obj, :column)
-    html.should have_field_div('checkBox') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      with_error
-    end
-  end
-  it "should return checked check_box" do
-    @obj.stub!(:column).and_return(true)
-    html = extended_check_box(:obj, :column)
-    html.should have_field_div('checkBox') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox][checked=checked]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      without_error
-    end
-  end
-
-  it "should return upload_column_field for image" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    html = extended_upload_image_field(:obj, :column)
-    html.should have_field_div('file', 'imageUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
-    end
-  end
-  it "should return upload_column_field for image with label" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    html = extended_upload_image_field(:obj, :column, :label => 'hello')
-    html.should have_field_div('file', 'imageUpload') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
-    end
-  end
-  it "should return upload_column_field for image with error" do
-    @errors.stub!(:on).and_return('error')
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    html = extended_upload_image_field(:obj, :column)
-    html.should have_field_div('file', 'imageUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      with_error
-    end
-  end
-  it "should return upload_column_field for image with image" do
-    @obj.stub!(:column).and_return(mock('image', :a => mock('thumbnail', :url => '/images/qwerty')))
-    @obj.stub!(:column_temp).and_return('qwerty')
-    html = extended_upload_image_field(:obj, :column, :preview_version => :a)
-    html.should have_field_div('file', 'imageUpload') do
-      without_label
-      with_tag('img[src=/images/qwerty][alt=Qwerty]')
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=qwerty]')
-      without_error
-    end
-  end
-
-  it "should return upload_column_field for file" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    html = extended_upload_file_field(:obj, :column)
-    html.should have_field_div('file', 'fileUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
-    end
-  end
-  it "should return upload_column_field for file with label" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    html = extended_upload_file_field(:obj, :column, :label => 'hello')
-    html.should have_field_div('file', 'fileUpload') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
-    end
-  end
-  it "should return upload_column_field for file with error" do
-    @errors.stub!(:on).and_return('error')
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    html = extended_upload_file_field(:obj, :column)
-    html.should have_field_div('file', 'fileUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      with_error
-    end
-  end
-  it "should return upload_column_field for file with link to file" do
-    @obj.stub!(:column).and_return(mock('file', :url => '/files/qwerty'))
-    @obj.stub!(:column_temp).and_return('qwerty')
-    html = extended_upload_file_field(:obj, :column)
-    puts html
-    html.should have_field_div('file', 'fileUpload') do
-      without_label
-      with_tag('a[href=/files/qwerty]')
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=qwerty]')
-      without_error
-    end
-  end
-end
-
-describe ExtendedFormHelper, 'with form_for' do
-  include ExtendedFormHelper
-  include ActionView::Helpers::FormHelper
-  include ActionView::Helpers::FormTagHelper
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::TextHelper
-  include ActionView::Helpers::AssetTagHelper
-  include ActionView::Helpers::UrlHelper
-  include UploadColumnHelper
-  include FieldHelperMethods
 
-  def url_for(options = {})
-    options.inspect
+  before do
+    @errors = mock('errors', :on => nil)
+    @obj = mock('obj', :text_column => 'qwerty', :object_name => 'obj', :to_s => 'obj', :errors => @errors)
+    I18n.backend.store_translations('en', {:obj => {:text_column => 'i18n text column label'}})
   end
-  def protect_against_forgery?
-    false
-  end
+
   def output_buffer
     @output_buffer ||= ''
   end
@@ -321,318 +36,347 @@ describe ExtendedFormHelper, 'with form_for' do
     @output_buffer = output_buffer
   end
 
-  before do
-    @obj = mock('obj', :column => 'qwerty', :object_name => 'obj', :to_s => 'obj', :id => 1)
-    @errors = mock('errors', :on => nil)
-    @obj.stub!(:errors).and_return(@errors)
-    @controller = mock('Controller', :url_for => 'http://example.com')
+  def content_before
+    '<span>before</span>'
   end
 
-  it "should return submit" do
-    form_for(:obj) do |f|
-      concat f.extended_submit('Save it!')
-    end
-    output_buffer.should have_form_with_field_div('submit') do
-      without_label
-      with_tag('input#obj_submit[name=\'commit\'][value=Save it!][type=submit]')
-      without_error
-    end
+  def content_after
+    '<span>after</span>'
   end
 
-  it "should return text_field" do
-    form_for(:obj) do |f|
-      concat f.extended_text_field(:column)
-    end
-    output_buffer.should have_form_with_field_div('text') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
-      without_error
-    end
-  end
-  it "should return text_field with label" do
-    form_for(:obj) do |f|
-      concat f.extended_text_field(:column, :label => 'hello')
-    end
-    output_buffer.should have_form_with_field_div('text') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
-      without_error
-    end
-  end
-  it "should return text_field with error" do
-    @errors.stub!(:on).and_return('error')
-    form_for(:obj) do |f|
-      concat f.extended_text_field(:column)
-    end
-    output_buffer.should have_form_with_field_div('text') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=qwerty][type=text]')
-      with_error
-    end
-  end
+  describe "with direct object sending" do
+    describe "rendering extended_control" do
+      it "should render" do
+        def trigger_a(object_name, method, options)
+          '<div>i am trigger</div>'
+        end
+        extended_control(:trigger_a, :obj, :text_column).
+        should have_same_dom(%q{
+          <div class="control triggerA">
+            <div>i am trigger</div>
+          </div>
+        })
+      end
 
-  it "should return file_field" do
-    form_for(:obj) do |f|
-      concat f.extended_file_field(:column)
+      it "should render with block" do
+        extended_control(:trigger_b, :obj, :text_column) do |f|
+          concat content_before
+          concat '<div>i am trigger</div>'
+          concat content_after
+        end.
+        should have_same_dom(%q{
+          <div class="control triggerB">
+            <span>before</span>
+            <div>i am trigger</div>
+            <span>after</span>
+          </div>
+        })
+      end
     end
-    output_buffer.should have_form_with_field_div('file') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      without_error
-    end
-  end
-  it "should return file_field with label" do
-    form_for(:obj) do |f|
-      concat f.extended_file_field(:column, :label => 'hello')
-    end
-    output_buffer.should have_form_with_field_div('file') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      without_error
-    end
-  end
-  it "should return file_field with error" do
-    @errors.stub!(:on).and_return('error')
-    form_for(:obj) do |f|
-      concat f.extended_file_field(:column)
-    end
-    output_buffer.should have_form_with_field_div('file') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_error
-    end
-  end
 
-  it "should return text_area" do
-    form_for(:obj) do |f|
-      concat f.extended_text_area(:column)
-    end
-    output_buffer.should have_form_with_field_div('textArea') do
-      without_label
-      with_tag('textarea#obj_column[name=\'obj[column]\']', 'qwerty')
-      without_error
-    end
-  end
-  it "should return text_area with label" do
-    form_for(:obj) do |f|
-      concat f.extended_text_area(:column, :label => 'hello')
-    end
-    output_buffer.should have_form_with_field_div('textArea') do
-      with_label
-      with_tag('textarea#obj_column[name=\'obj[column]\']', 'qwerty')
-      without_error
-    end
-  end
-  it "should return text_area with error" do
-    @errors.stub!(:on).and_return('error')
-    form_for(:obj) do |f|
-      concat f.extended_text_area(:column)
-    end
-    output_buffer.should have_form_with_field_div('textArea') do
-      without_label
-      with_tag('textarea#obj_column[name=\'obj[column]\']', 'qwerty')
-      with_error
-    end
-  end
+    describe "rendering extended_text_field" do
+      it "should render simple form" do
+        extended_text_field(:obj, :text_column).
+        should have_same_dom(%q{
+          <div class="control textField">
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+          </div>
+        })
+      end
 
-  it "should return password_field (with blank value)" do
-    form_for(:obj) do |f|
-      concat f.extended_password_field(:column)
-    end
-    output_buffer.should have_form_with_field_div('password') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=][type=password]')
-      without_error
-    end
-  end
-  it "should return password_field (with blank value) with label" do
-    form_for(:obj) do |f|
-      concat f.extended_password_field(:column, :label => 'hello')
-    end
-    output_buffer.should have_form_with_field_div('password') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=][type=password]')
-      without_error
-    end
-  end
-  it "should return password_field (with blank value) with error" do
-    @errors.stub!(:on).and_return('error')
-    form_for(:obj) do |f|
-      concat f.extended_password_field(:column)
-    end
-    output_buffer.should have_form_with_field_div('password') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=][type=password]')
-      with_error
-    end
-  end
-  it "should return password_field (with value)" do
-    form_for(:obj) do |f|
-      concat f.extended_password_field(:column, :value => 'asdfgh')
-    end
-    output_buffer.should have_form_with_field_div('password') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=asdfgh][type=password]')
-      without_error
-    end
-  end
+      it "should render with before and after" do
+        extended_text_field(:obj, :text_column, :before => content_before, :after => content_after).
+        should have_same_dom(%q{
+          <div class="control textField">
+            <span>before</span>
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <span>after</span>
+          </div>
+        })
+      end
 
-  it "should return check_box" do
-    form_for(:obj) do |f|
-      concat f.extended_check_box(:column)
-    end
-    output_buffer.should have_form_with_field_div('checkBox') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      without_error
-    end
-  end
-  it "should return check_box with label" do
-    form_for(:obj) do |f|
-      concat f.extended_check_box(:column, :label => 'hello')
-    end
-    output_buffer.should have_form_with_field_div('checkBox') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      without_error
-    end
-  end
-  it "should return check_box with error" do
-    @errors.stub!(:on).and_return('error')
-    form_for(:obj) do |f|
-      concat f.extended_check_box(:column)
-    end
-    output_buffer.should have_form_with_field_div('checkBox') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      with_error
-    end
-  end
-  it "should return checked check_box" do
-    @obj.stub!(:column).and_return(true)
-    form_for(:obj) do |f|
-      concat f.extended_check_box(:column)
-    end
-    output_buffer.should have_form_with_field_div('checkBox') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][value=1][type=checkbox][checked=checked]')
-      with_tag('input[name=\'obj[column]\'][value=0][type=hidden]')
-      without_error
-    end
-  end
+      it "should render with block" do
+        extended_text_field(:obj, :text_column) do |f|
+          concat content_before
+          concat f
+          concat content_after
+        end.
+        should have_same_dom(%q{
+          <div class="control textField">
+            <span>before</span>
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <span>after</span>
+          </div>
+        })
+      end
 
-  it "should return upload_column_field for image" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    form_for(:obj) do |f|
-      concat f.extended_upload_image_field(:column)
-    end
-    output_buffer.should have_field_div('file', 'imageUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
-    end
-  end
-  it "should return upload_column_field for image with label" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    form_for(:obj) do |f|
-      concat f.extended_upload_image_field(:column, :label => 'hello')
-    end
-    output_buffer.should have_field_div('file', 'imageUpload') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
-    end
-  end
-  it "should return upload_column_field for image with error" do
-    @errors.stub!(:on).and_return('error')
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    form_for(:obj) do |f|
-      concat f.extended_upload_image_field(:column)
-    end
-    output_buffer.should have_field_div('file', 'imageUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      with_error
-    end
-  end
-  it "should return upload_column_field for image with image" do
-    @obj.stub!(:column).and_return(mock('image', :a => mock('thumbnail', :url => '/images/qwerty')))
-    @obj.stub!(:column_temp).and_return('qwerty')
-    form_for(:obj) do |f|
-      concat f.extended_upload_image_field(:column, :preview_version => :a)
-    end
-    output_buffer.should have_field_div('file', 'imageUpload') do
-      without_label
-      with_tag('img[src=/images/qwerty][alt=Qwerty]')
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=qwerty]')
-      without_error
-    end
-  end
+      it "should assign class to div" do
+        extended_text_field(:obj, :text_column, :class => 'specialClass').
+        should have_same_dom(%q{
+          <div class="control textField specialClass">
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+          </div>
+        })
+      end
 
-  it "should return upload_column_field for file" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    form_for(:obj) do |f|
-      concat f.extended_upload_file_field(:column)
+      it "should create label" do
+        extended_text_field(:obj, :text_column, :label => 'text column label').
+        should have_same_dom(%q{
+          <div class="control textField">
+            <label for="obj_text_column">text column label</label>
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+          </div>
+        })
+      end
+
+      it "should get label from I18n" do
+        extended_text_field(:obj, :text_column, :label => true).
+        should have_same_dom(%q{
+          <div class="control textField">
+            <label for="obj_text_column">i18n text column label</label>
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+          </div>
+        })
+      end
+
+      it "should show error" do
+        @errors.stub!(:on).and_return('error')
+        extended_text_field(:obj, :text_column).
+        should have_same_dom(%q{
+          <div class="control textField">
+            <div class="fieldWithErrors">
+              <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            </div>
+            <div class="formError">error</div>
+          </div>
+        })
+      end
+
+      it "should show errors" do
+        @errors.stub!(:on).and_return(['error a', 'error b'])
+        extended_text_field(:obj, :text_column).
+        should have_same_dom(%q{
+          <div class="control textField">
+            <div class="fieldWithErrors">
+              <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            </div>
+            <ul class="formErrors">
+              <li class="formError">error a</li>
+              <li class="formError">error b</li>
+            </ul>
+          </div>
+        })
+      end
     end
-    output_buffer.should have_field_div('file', 'fileUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
+
+    describe "rendering extended_text_area" do
+      it "should render" do
+        extended_text_area(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+          concat content_before
+          concat f
+          concat content_after
+        end.
+        should have_same_dom(%q{
+          <div class="control textArea specialClass">
+            <span>before</span>
+            <label for="obj_text_column">i18n text column label</label>
+            <textarea id="obj_text_column" name="obj[text_column]" cols="40" rows="20">qwerty</textarea>
+            <span>after</span>
+          </div>
+        })
+      end
     end
-  end
-  it "should return upload_column_field for file with label" do
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    form_for(:obj) do |f|
-      concat f.extended_upload_file_field(:column, :label => 'hello')
+
+    describe "rendering extended_password_field" do
+      it "should render without value" do
+        extended_password_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+          concat content_before
+          concat f
+          concat content_after
+        end.
+        should have_same_dom(%q{
+          <div class="control passwordField specialClass">
+            <span>before</span>
+            <label for="obj_text_column">i18n text column label</label>
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="" />
+            <span>after</span>
+          </div>
+        })
+      end
+
+      it "should render with value when it is set to true" do
+        extended_password_field(:obj, :text_column, :value => true).
+        should have_same_dom(%q{
+          <div class="control passwordField">
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="qwerty" />
+          </div>
+        })
+      end
+
+      it "should render with value when it is set" do
+        extended_password_field(:obj, :text_column, :value => 'pass').
+        should have_same_dom(%q{
+          <div class="control passwordField">
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="pass" />
+          </div>
+        })
+      end
     end
-    output_buffer.should have_field_div('file', 'fileUpload') do
-      with_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      without_error
+
+    describe "rendering extended_file_field" do
+      it "should render" do
+        extended_file_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+          concat content_before
+          concat f
+          concat content_after
+        end.
+        should have_same_dom(%q{
+          <div class="control fileField specialClass">
+            <span>before</span>
+            <label for="obj_text_column">i18n text column label</label>
+            <input id="obj_text_column" name="obj[text_column]" size="30" type="file" />
+            <span>after</span>
+          </div>
+        })
+      end
     end
-  end
-  it "should return upload_column_field for file with error" do
-    @errors.stub!(:on).and_return('error')
-    @obj.stub!(:column).and_return(nil)
-    @obj.stub!(:column_temp).and_return('')
-    form_for(:obj) do |f|
-      concat f.extended_upload_file_field(:column)
+
+    describe "rendering extended_check_box" do
+      it "should render" do
+        extended_check_box(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+          concat content_before
+          concat f
+          concat content_after
+        end.
+        should have_same_dom(%q{
+          <div class="control checkBox specialClass">
+            <span>before</span>
+            <input name="obj[text_column]" type="hidden" value="0" />
+            <input id="obj_text_column" name="obj[text_column]" type="checkbox" value="1" />
+            <label for="obj_text_column">i18n text column label</label>
+            <span>after</span>
+          </div>
+        })
+      end
     end
-    output_buffer.should have_field_div('file', 'fileUpload') do
-      without_label
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=]')
-      with_error
-    end
-  end
-  it "should return upload_column_field for file with link to file" do
-    @obj.stub!(:column).and_return(mock('file', :url => '/files/qwerty'))
-    @obj.stub!(:column_temp).and_return('qwerty')
-    form_for(:obj) do |f|
-      concat f.extended_upload_file_field(:column)
-    end
-    output_buffer.sub!('href=""/files/qwerty""', 'href="/files/qwerty"') # i don't know what the heck is with link_to
-    output_buffer.should have_field_div('file', 'fileUpload') do
-      without_label
-      with_tag('a[href=/files/qwerty]')
-      with_tag('input#obj_column[name=\'obj[column]\'][type=file]')
-      with_tag('input#obj_column_temp[name=\'obj[column_temp]\'][type=hidden][value=qwerty]')
-      without_error
+
+    describe "rendering extended_submit" do
+      before do
+        I18n.backend.store_translations('en', {:obj => {:create => 'create', :save => 'save'}})
+      end
+
+      it "should render with explicit text" do
+        extended_submit('click me').
+        should have_same_dom(%q{
+          <div class="control submit">
+            <input name="commit" type="submit" value="click me" />
+          </div>
+        })
+      end
+
+      it "should get text from I18n obj.create without arguments when object is new" do
+        @obj.stub!(:new_record?).and_return(true)
+        extended_submit(:obj).
+        should have_same_dom(%q{
+          <div class="control submit">
+            <input name="commit" type="submit" value="create" />
+          </div>
+        })
+      end
+
+      it "should get text from I18n obj.save without arguments when object is not new" do
+        @obj.stub!(:new_record?).and_return(false)
+        extended_submit(:obj).
+        should have_same_dom(%q{
+          <div class="control submit">
+            <input name="commit" type="submit" value="save" />
+          </div>
+        })
+      end
+
+      it "should assign class to div" do
+        @obj.stub!(:new_record?).and_return(false)
+        extended_submit(:obj, nil, :class => 'coolSubmitButton').
+        should have_same_dom(%q{
+          <div class="control submit coolSubmitButton">
+            <input name="commit" type="submit" value="save" />
+          </div>
+        })
+      end
+
+      it "should accept options also as second argument" do
+        @obj.stub!(:new_record?).and_return(false)
+        extended_submit(:obj, :class => 'coolSubmitButton').
+        should have_same_dom(%q{
+          <div class="control submit coolSubmitButton">
+            <input name="commit" type="submit" value="save" />
+          </div>
+        })
+      end
     end
   end
 
+  describe "with form_for" do
+    include ActionView::Helpers::FormHelper
+    include ActionView::Helpers::FormTagHelper
+    include ActionView::Helpers::RecordIdentificationHelper
+
+    def polymorphic_path(record_or_hash_or_array, options = {})
+      [record_or_hash_or_array, options].inspect
+    end
+
+    def url_for(options = {})
+      options.inspect
+    end
+
+    def protect_against_forgery?
+      false
+    end
+
+    it "should call extended_control" do
+      self.should_receive(:extended_control).with(:trigger_a, :obj, "text_column", hash_including(:object)).and_return('')
+      form_for(:obj) do |f|
+        concat f.extended_control(:trigger_a, 'text_column')
+      end
+    end
+
+    %w(extended_text_field extended_text_area extended_password_field extended_file_field extended_check_box).each do |helper|
+      it "should call #{helper}" do
+        self.should_receive(helper.to_sym).with(:obj, "text_column", hash_including(:object)).and_return('')
+        form_for(:obj) do |f|
+          concat f.send(helper, 'text_column')
+        end
+      end
+    end
+
+    describe "calling extended_submit" do
+      it "should call without arguments" do
+        self.should_receive(:extended_submit).with(:obj, nil, hash_including(:object)).and_return('')
+        form_for(:obj) do |f|
+          concat f.extended_submit
+        end
+      end
+
+      it "should call with options" do
+        self.should_receive(:extended_submit).with(:obj, nil, hash_including(:object, :class => 'superSubmit')).and_return('')
+        form_for(:obj) do |f|
+          concat f.extended_submit(:class => 'superSubmit')
+        end
+      end
+
+      it "should call with string and options" do
+        self.should_receive(:extended_submit).with(:obj, 'hello', hash_including(:object, :class => 'superSubmit')).and_return('')
+        form_for(:obj) do |f|
+          concat f.extended_submit('hello', :class => 'superSubmit')
+        end
+      end
+    end
+
+    it "should call error_messages_on" do
+      self.should_receive(:error_messages_on).with(:obj, "text_column", {}).and_return('')
+      form_for(:obj) do |f|
+        concat f.error_messages_on('text_column')
+      end
+    end
+  end
 end
