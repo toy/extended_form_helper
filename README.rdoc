@@ -82,7 +82,7 @@ in block form:
     <span>after</span>
   </div>
 
-instead of to_str (which concats label, control and errors) you can use methods of f: label, control, errors
+besides to_str method (called implicitly - concats label, control and errors), there are methods label, control and errors
 
 === extended_text_area, extended_file_field, extended_check_box
 
