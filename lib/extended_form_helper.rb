@@ -1,17 +1,17 @@
 module ExtendedFormHelper
-  def extended_control(type, object_name, method, options = {}, &block)
+  def e_control(type, object_name, method, options = {}, &block)
     ExtendedFormControl.new(type, object_name, method, self, options).extended_control(&block)
   end
 
-  def extended_text_field(object_name, method, options = {}, &block)
+  def e_text_field(object_name, method, options = {}, &block)
     ExtendedFormControl.new(:text_field, object_name, method, self, options).extended_control(&block)
   end
 
-  def extended_text_area(object_name, method, options = {}, &block)
+  def e_text_area(object_name, method, options = {}, &block)
     ExtendedFormControl.new(:text_area, object_name, method, self, options).extended_control(&block)
   end
 
-  def extended_password_field(object_name, method, options = {}, &block)
+  def e_password_field(object_name, method, options = {}, &block)
     if options[:value] == true
       options[:value] = nil
     elsif !options[:value]
@@ -20,15 +20,15 @@ module ExtendedFormHelper
     ExtendedFormControl.new(:password_field, object_name, method, self, options).extended_control(&block)
   end
 
-  def extended_file_field(object_name, method, options = {}, &block)
+  def e_file_field(object_name, method, options = {}, &block)
     ExtendedFormControl.new(:file_field, object_name, method, self, options).extended_control(&block)
   end
 
-  def extended_check_box(object_name, method, options = {}, &block)
+  def e_check_box(object_name, method, options = {}, &block)
     ExtendedFormControl.new(:check_box, object_name, method, self, options).extended_control(&block)
   end
 
-  def extended_submit(object_name, value = nil, options = {}, &block)
+  def e_submit(object_name, value = nil, options = {}, &block)
     if Hash === value && options == {}
       value, options = nil, value
     end
@@ -54,7 +54,7 @@ module ExtendedFormHelper
 end
 
 class ActionView::Helpers::FormBuilder
-  %w(extended_text_field extended_text_area extended_password_field extended_file_field extended_check_box).each do |helper|
+  %w(e_text_field e_text_area e_password_field e_file_field e_check_box).each do |helper|
     field_helpers << helper
     class_eval %Q{
       def #{helper}(method, options = {}, &block)
@@ -63,17 +63,17 @@ class ActionView::Helpers::FormBuilder
     }, __FILE__, __LINE__
   end
 
-  field_helpers << 'extended_control'
-  def extended_control(type, method, options = {}, &block)
-    @template.extended_control(type, @object_name, method, objectify_options(options), &block)
+  field_helpers << 'e_control'
+  def e_control(type, method, options = {}, &block)
+    @template.e_control(type, @object_name, method, objectify_options(options), &block)
   end
 
-  field_helpers << 'extended_submit'
-  def extended_submit(value = nil, options = {}, &block)
+  field_helpers << 'e_submit'
+  def e_submit(value = nil, options = {}, &block)
     if Hash === value && options == {}
       value, options = nil, value
     end
-    @template.extended_submit(@object_name, value, objectify_options(options), &block)
+    @template.e_submit(@object_name, value, objectify_options(options), &block)
   end
 
   self.field_helpers << 'error_messages_on'

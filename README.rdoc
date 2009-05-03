@@ -2,20 +2,20 @@
 
 Helper methods to ease form creation
 
-Note that all extended_xxx are just wrapers, so all non mentioned options are send directly to underlying method
+Note that all e_xxx are just wrapers, so all non mentioned options are send directly to underlying method
 
 == Examples
 
-=== extended_text_field
+=== e_text_field
 
-  <%= extended_text_field(:page, :title) %>
+  <%= e_text_field(:page, :title) %>
 
   <div class="control textField">
     <input id="page_title" name="page[title]" size="30" type="text" value="qwerty" />
   </div>
 
 with error:
-  <%= extended_text_field(:page, :title) %>
+  <%= e_text_field(:page, :title) %>
 
   <div class="control textField">
     <div class="fieldWithErrors">
@@ -25,7 +25,7 @@ with error:
   </div>
 
 with errors:
-  <%= extended_text_field(:page, :title) %>
+  <%= e_text_field(:page, :title) %>
 
   <div class="control textField">
     <div class="fieldWithErrors">
@@ -38,7 +38,7 @@ with errors:
   </div>
 
 with label:
-  <%= extended_text_field(:page, :title, :label => 'Input text') %>
+  <%= e_text_field(:page, :title, :label => 'Input text') %>
 
   <div class="control textField">
     <label for="page_title">Input text</label>
@@ -46,7 +46,7 @@ with label:
   </div>
 
 with label from I18n (define translation for 'page.title'):
-  <%= extended_text_field(:page, :title, :label => true) %>
+  <%= e_text_field(:page, :title, :label => true) %>
 
   <div class="control textField">
     <label for="page_title">special label</label>
@@ -54,14 +54,14 @@ with label from I18n (define translation for 'page.title'):
   </div>
 
 with class:
-  <%= extended_text_field(:page, :title, :class => 'superField') %>
+  <%= e_text_field(:page, :title, :class => 'superField') %>
 
   <div class="control textField superField">
     <input id="page_title" name="page[title]" size="30" type="text" value="qwerty" />
   </div>
 
 with content before and after:
-  <%= extended_text_field(:page, :title, :before => '<span>before</span>', :after => '<span>after</span>') %>
+  <%= e_text_field(:page, :title, :before => '<span>before</span>', :after => '<span>after</span>') %>
 
   <div class="control textField">
     <span>before</span>
@@ -70,7 +70,7 @@ with content before and after:
   </div>
 
 in block form:
-  <%- extended_text_field(:page, :title) do |f| -%>
+  <%- e_text_field(:page, :title) do |f| -%>
     <span>before</span>
     <%= f %>
     <span>after</span>
@@ -84,12 +84,12 @@ in block form:
 
 besides to_str method (called implicitly - concats label, control and errors), there are methods label, control and errors
 
-=== extended_text_area, extended_file_field, extended_check_box
+=== e_text_area, e_file_field, e_check_box
 
-same as extended_text_field:
-  <%= extended_text_area(:page, :title, :label => 'Input text') %>
-  <%= extended_file_field(:page, :title, :label => 'Input text') %>
-  <%= extended_check_box(:page, :title, :label => 'Input text') %>
+same as e_text_field:
+  <%= e_text_area(:page, :title, :label => 'Input text') %>
+  <%= e_file_field(:page, :title, :label => 'Input text') %>
+  <%= e_check_box(:page, :title, :label => 'Input text') %>
 
   <div class="control textArea">
     <label for="page_title">Input text</label>
@@ -105,10 +105,10 @@ same as extended_text_field:
     <label for="page_title">Input text</label>
   </div>
 
-=== extended_password_field
+=== e_password_field
 
-same as extended_text_field, but value is not automatically inserted:
-  <%= extended_password_field(:page, :title, :label => 'Input text') %>
+same as e_text_field, but value is not automatically inserted:
+  <%= e_password_field(:page, :title, :label => 'Input text') %>
 
   <div class="control passwordField">
     <label for="page_title">Input text</label>
@@ -116,22 +116,22 @@ same as extended_text_field, but value is not automatically inserted:
   </div>
 
 pass :value => true to insert:
-  <%= extended_password_field(:page, :title, :value => true) %>
+  <%= e_password_field(:page, :title, :value => true) %>
 
   <div class="control passwordField">
     <input id="page_title" name="page[title]" size="30" type="password" value="qwerty" />
   </div>
 
-=== extended_submit
+=== e_submit
 
-  <%= extended_submit('save') %>
+  <%= e_submit('save') %>
 
   <div class="control submit">
     <input name="commit" type="submit" value="save" />
   </div>
 
 getting values from I18n (define translation for 'page.create' and 'page.save'):
-  <%= extended_submit(:page) %>
+  <%= e_submit(:page) %>
 
   <div class="control submit">
     <input name="commit" type="submit" value="Create page!" />
@@ -142,7 +142,7 @@ getting values from I18n (define translation for 'page.create' and 'page.save'):
   def trigger(object_name, method, options)
     '<div>i am trigger</div>'
   end
-  <%= extended_control(:trigger, :obj, :text_column) %>
+  <%= e_control(:trigger, :obj, :text_column) %>
 
   <div class="control trigger">
     <div>i am trigger</div>
@@ -153,7 +153,7 @@ as block:
   def super_trigger(object_name, method, options)
     '<div>i am super trigger</div>'
   end
-  <%- extended_control(:super_trigger, :obj, :text_column) do || -%>
+  <%- e_control(:super_trigger, :obj, :text_column) do || -%>
     <span>before</span>
     <%= f %>
     <span>after</span>

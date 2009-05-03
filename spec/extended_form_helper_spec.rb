@@ -45,12 +45,12 @@ describe ExtendedFormHelper do
   end
 
   describe "with direct object sending" do
-    describe "rendering extended_control" do
+    describe "rendering e_control" do
       it "should render" do
         def trigger_a(object_name, method, options)
           '<div>i am trigger</div>'
         end
-        extended_control(:trigger_a, :obj, :text_column).
+        e_control(:trigger_a, :obj, :text_column).
         should have_same_dom(%q{
           <div class="control triggerA">
             <div>i am trigger</div>
@@ -59,7 +59,7 @@ describe ExtendedFormHelper do
       end
 
       it "should render with block" do
-        extended_control(:trigger_b, :obj, :text_column) do |f|
+        e_control(:trigger_b, :obj, :text_column) do |f|
           concat content_before
           concat '<div>i am trigger</div>'
           concat content_after
@@ -74,9 +74,9 @@ describe ExtendedFormHelper do
       end
     end
 
-    describe "rendering extended_text_field" do
+    describe "rendering e_text_field" do
       it "should render simple form" do
-        extended_text_field(:obj, :text_column).
+        e_text_field(:obj, :text_column).
         should have_same_dom(%q{
           <div class="control textField">
             <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
@@ -85,7 +85,7 @@ describe ExtendedFormHelper do
       end
 
       it "should render with before and after" do
-        extended_text_field(:obj, :text_column, :before => content_before, :after => content_after).
+        e_text_field(:obj, :text_column, :before => content_before, :after => content_after).
         should have_same_dom(%q{
           <div class="control textField">
             <span>before</span>
@@ -96,7 +96,7 @@ describe ExtendedFormHelper do
       end
 
       it "should render with block" do
-        extended_text_field(:obj, :text_column) do |f|
+        e_text_field(:obj, :text_column) do |f|
           concat content_before
           concat f
           concat content_after
@@ -111,7 +111,7 @@ describe ExtendedFormHelper do
       end
 
       it "should assign class to div" do
-        extended_text_field(:obj, :text_column, :class => 'specialClass').
+        e_text_field(:obj, :text_column, :class => 'specialClass').
         should have_same_dom(%q{
           <div class="control textField specialClass">
             <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
@@ -120,7 +120,7 @@ describe ExtendedFormHelper do
       end
 
       it "should create label" do
-        extended_text_field(:obj, :text_column, :label => 'text column label').
+        e_text_field(:obj, :text_column, :label => 'text column label').
         should have_same_dom(%q{
           <div class="control textField">
             <label for="obj_text_column">text column label</label>
@@ -130,7 +130,7 @@ describe ExtendedFormHelper do
       end
 
       it "should get label from I18n" do
-        extended_text_field(:obj, :text_column, :label => true).
+        e_text_field(:obj, :text_column, :label => true).
         should have_same_dom(%q{
           <div class="control textField">
             <label for="obj_text_column">i18n text column label</label>
@@ -141,7 +141,7 @@ describe ExtendedFormHelper do
 
       it "should show error" do
         @errors.stub!(:on).and_return('error')
-        extended_text_field(:obj, :text_column).
+        e_text_field(:obj, :text_column).
         should have_same_dom(%q{
           <div class="control textField">
             <div class="fieldWithErrors">
@@ -154,7 +154,7 @@ describe ExtendedFormHelper do
 
       it "should show errors" do
         @errors.stub!(:on).and_return(['error a', 'error b'])
-        extended_text_field(:obj, :text_column).
+        e_text_field(:obj, :text_column).
         should have_same_dom(%q{
           <div class="control textField">
             <div class="fieldWithErrors">
@@ -169,9 +169,9 @@ describe ExtendedFormHelper do
       end
     end
 
-    describe "rendering extended_text_area" do
+    describe "rendering e_text_area" do
       it "should render" do
-        extended_text_area(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_text_area(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -187,9 +187,9 @@ describe ExtendedFormHelper do
       end
     end
 
-    describe "rendering extended_password_field" do
+    describe "rendering e_password_field" do
       it "should render without value" do
-        extended_password_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_password_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -205,7 +205,7 @@ describe ExtendedFormHelper do
       end
 
       it "should render with value when it is set to true" do
-        extended_password_field(:obj, :text_column, :value => true).
+        e_password_field(:obj, :text_column, :value => true).
         should have_same_dom(%q{
           <div class="control passwordField">
             <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="qwerty" />
@@ -214,7 +214,7 @@ describe ExtendedFormHelper do
       end
 
       it "should render with value when it is set" do
-        extended_password_field(:obj, :text_column, :value => 'pass').
+        e_password_field(:obj, :text_column, :value => 'pass').
         should have_same_dom(%q{
           <div class="control passwordField">
             <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="pass" />
@@ -223,9 +223,9 @@ describe ExtendedFormHelper do
       end
     end
 
-    describe "rendering extended_file_field" do
+    describe "rendering e_file_field" do
       it "should render" do
-        extended_file_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_file_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -241,9 +241,9 @@ describe ExtendedFormHelper do
       end
     end
 
-    describe "rendering extended_check_box" do
+    describe "rendering e_check_box" do
       it "should render" do
-        extended_check_box(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_check_box(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -260,13 +260,13 @@ describe ExtendedFormHelper do
       end
     end
 
-    describe "rendering extended_submit" do
+    describe "rendering e_submit" do
       before do
         I18n.backend.store_translations('en', {:obj => {:create => 'create', :save => 'save'}})
       end
 
       it "should render with explicit text" do
-        extended_submit('click me').
+        e_submit('click me').
         should have_same_dom(%q{
           <div class="control submit">
             <input name="commit" type="submit" value="click me" />
@@ -276,7 +276,7 @@ describe ExtendedFormHelper do
 
       it "should get text from I18n obj.create without arguments when object is new" do
         @obj.stub!(:new_record?).and_return(true)
-        extended_submit(:obj).
+        e_submit(:obj).
         should have_same_dom(%q{
           <div class="control submit">
             <input name="commit" type="submit" value="create" />
@@ -286,7 +286,7 @@ describe ExtendedFormHelper do
 
       it "should get text from I18n obj.save without arguments when object is not new" do
         @obj.stub!(:new_record?).and_return(false)
-        extended_submit(:obj).
+        e_submit(:obj).
         should have_same_dom(%q{
           <div class="control submit">
             <input name="commit" type="submit" value="save" />
@@ -296,7 +296,7 @@ describe ExtendedFormHelper do
 
       it "should assign class to div" do
         @obj.stub!(:new_record?).and_return(false)
-        extended_submit(:obj, nil, :class => 'coolSubmitButton').
+        e_submit(:obj, nil, :class => 'coolSubmitButton').
         should have_same_dom(%q{
           <div class="control submit coolSubmitButton">
             <input name="commit" type="submit" value="save" />
@@ -306,7 +306,7 @@ describe ExtendedFormHelper do
 
       it "should accept options also as second argument" do
         @obj.stub!(:new_record?).and_return(false)
-        extended_submit(:obj, :class => 'coolSubmitButton').
+        e_submit(:obj, :class => 'coolSubmitButton').
         should have_same_dom(%q{
           <div class="control submit coolSubmitButton">
             <input name="commit" type="submit" value="save" />
@@ -333,14 +333,14 @@ describe ExtendedFormHelper do
       false
     end
 
-    it "should call extended_control" do
-      self.should_receive(:extended_control).with(:trigger_a, :obj, "text_column", hash_including(:object)).and_return('')
+    it "should call e_control" do
+      self.should_receive(:e_control).with(:trigger_a, :obj, "text_column", hash_including(:object)).and_return('')
       form_for(:obj) do |f|
-        concat f.extended_control(:trigger_a, 'text_column')
+        concat f.e_control(:trigger_a, 'text_column')
       end
     end
 
-    %w(extended_text_field extended_text_area extended_password_field extended_file_field extended_check_box).each do |helper|
+    %w(e_text_field e_text_area e_password_field e_file_field e_check_box).each do |helper|
       it "should call #{helper}" do
         self.should_receive(helper.to_sym).with(:obj, "text_column", hash_including(:object)).and_return('')
         form_for(:obj) do |f|
@@ -349,25 +349,25 @@ describe ExtendedFormHelper do
       end
     end
 
-    describe "calling extended_submit" do
+    describe "calling e_submit" do
       it "should call without arguments" do
-        self.should_receive(:extended_submit).with(:obj, nil, hash_including(:object)).and_return('')
+        self.should_receive(:e_submit).with(:obj, nil, hash_including(:object)).and_return('')
         form_for(:obj) do |f|
-          concat f.extended_submit
+          concat f.e_submit
         end
       end
 
       it "should call with options" do
-        self.should_receive(:extended_submit).with(:obj, nil, hash_including(:object, :class => 'superSubmit')).and_return('')
+        self.should_receive(:e_submit).with(:obj, nil, hash_including(:object, :class => 'superSubmit')).and_return('')
         form_for(:obj) do |f|
-          concat f.extended_submit(:class => 'superSubmit')
+          concat f.e_submit(:class => 'superSubmit')
         end
       end
 
       it "should call with string and options" do
-        self.should_receive(:extended_submit).with(:obj, 'hello', hash_including(:object, :class => 'superSubmit')).and_return('')
+        self.should_receive(:e_submit).with(:obj, 'hello', hash_including(:object, :class => 'superSubmit')).and_return('')
         form_for(:obj) do |f|
-          concat f.extended_submit('hello', :class => 'superSubmit')
+          concat f.e_submit('hello', :class => 'superSubmit')
         end
       end
     end
