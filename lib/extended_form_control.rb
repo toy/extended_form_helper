@@ -12,6 +12,14 @@ class ExtendedFormControl
     @class = @options.delete(:class)
     @before = @options.delete(:before)
     @after = @options.delete(:after)
+    if @hint = @options.delete(:hint)
+      if control =~ /value="[^"]/
+        @hint_hidden = true
+      else
+        @options[:style] = "display: none; #{@options[:style]}"
+      end
+      @options[:onBlur] = "if(this.value==''){document.getElementById('#{hint_id}').style.display='';document.getElementById('#{control_id}').style.display='none';}; #{@options[:onBlur]}"
+    end
   end
 
   def extended_control
@@ -31,10 +39,6 @@ class ExtendedFormControl
     end
   end
 
-  def object
-    ActionView::Helpers::InstanceTag.new(@object_name, @method, @template_object, @options[:object]).object
-  end
-
   def label
     # calling label which is defined in ActionView::Helpers::FormHelper
     super(@object_name, @method, @label == true ? I18n.t(@method, :scope => @object_name) : @label)
@@ -48,14 +52,36 @@ class ExtendedFormControl
     error_messages_on(object, @method)
   end
 
+  def hint
+    if @hint
+      options = {
+        :id => hint_id,
+        :class => 'hint',
+        :onFocus => "document.getElementById('#{hint_id}').style.display='none';document.getElementById('#{control_id}').style.display='';document.getElementById('#{control_id}').focus();",
+      }
+      options[:style] = 'display: none;' if @hint_hidden
+      text_field_tag(nil, @hint, options)
+    end
+  end
+
   def to_str
     if @type == :check_box
       "#{control}#{label if @label}#{errors unless @options[:no_errors]}"
     else
-      "#{label if @label}#{control}#{errors unless @options[:no_errors]}"
+      "#{label if @label}#{hint}#{control}#{errors unless @options[:no_errors]}"
     end
   end
   alias to_s to_str
+
+protected
+
+  def instance_tag
+    ActionView::Helpers::InstanceTag.new(@object_name, @method, @template_object, @options[:object])
+  end
+
+  def object
+    instance_tag.object
+  end
 
   def submit(object_name, method, options)
     value = options.delete(:value)
@@ -66,4 +92,13 @@ class ExtendedFormControl
       submit_tag(value, options)
     end
   end
+
+  def control_id
+    instance_tag.send(:tag_id)
+  end
+
+  def hint_id
+    "#{control_id}__hint"
+  end
+
 end

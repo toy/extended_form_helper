@@ -4,6 +4,17 @@ Helper methods to ease form creation
 
 Note that all e_xxx are just wrapers, so all non mentioned options are send directly to underlying method
 
+All methods work as expected in form_for:
+  <% form_for(:page) do |f| %>
+    <%= f.e_text_field(:title, :label => true) %>
+    <%= f.e_text_area(:text, :label => true, :before => '<span>description</span>') %>
+    <%- f.e_check_box(:agree, :label => true) do |c| -%>
+      <%= c %>
+      <%= render 'agreement' %>
+    <%- end -%>
+    <%= f.e_submit %>
+  <% end %>
+
 == Examples
 
 === e_text_field
@@ -12,6 +23,14 @@ Note that all e_xxx are just wrapers, so all non mentioned options are send dire
 
   <div class="control textField">
     <input id="page_title" name="page[title]" size="30" type="text" value="qwerty" />
+  </div>
+
+with hint:
+  <%= e_text_field(:page, :title, :hint => 'shit') %>
+
+  <div class="control textField">
+    <input class="hint" id="page_title__hint" onFocus="document.getElementById('page_title__hint').style.display='none';document.getElementById('page_title').style.display='';document.getElementById('page_title').focus();" style="display: none;" type="text" value="input some text" />
+    <input id="page_title" name="page[title]" onBlur="if(this.value==''){document.getElementById('page_title__hint').style.display='';document.getElementById('page_title').style.display='none';}; " size="30" type="text" value="asrt" />
   </div>
 
 with error:
