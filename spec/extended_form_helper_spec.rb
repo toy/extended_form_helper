@@ -265,15 +265,6 @@ describe ExtendedFormHelper do
         I18n.backend.store_translations('en', {:obj => {:create => 'create', :save => 'save'}})
       end
 
-      it "should render with explicit text" do
-        e_submit('click me').
-        should have_same_dom(%q{
-          <div class="control submit">
-            <input name="commit" type="submit" value="click me" />
-          </div>
-        })
-      end
-
       it "should get text from I18n obj.create without arguments when object is new" do
         @obj.stub!(:new_record?).and_return(true)
         e_submit(:obj).

@@ -32,9 +32,6 @@ module ExtendedFormHelper
     if Hash === value && options == {}
       value, options = nil, value
     end
-    if String === object_name
-      object_name, value = nil, object_name
-    end
     ExtendedFormControl.new(:submit, object_name, nil, self, options.merge(:value => value)).extended_control(&block)
   end
 
