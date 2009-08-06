@@ -40,21 +40,7 @@ class ExtendedFormControl
   end
 
   def i18n_label_string
-    scopes = [@object_name]
-    if klass = object && object.class
-      while klass && ![ActiveRecord::Base, Object].include?(klass)
-        scopes << klass.name.underscore
-        klass = klass.superclass
-      end
-    end
-    scopes.uniq!
-    scopes.each do |scope|
-      label = I18n.t(@method, :scope => scope, :default => '')
-      return label if label.present?
-    end
-    scopes.map do |scope|
-      I18n.t(@method, :scope => scope)
-    end.join('; ')
+    i18n_object_scope_string(@method)
   end
 
   def label
@@ -105,7 +91,7 @@ protected
     value = options.delete(:value)
     options.delete(:object)
     if value.nil?
-      submit_tag(I18n.t(object.new_record? ? 'create' : 'save', :scope => @object_name), options)
+      submit_tag(i18n_object_scope_string(object.new_record? ? 'create' : 'save'), options)
     else
       submit_tag(value, options)
     end
@@ -119,4 +105,21 @@ protected
     "#{control_id}__hint"
   end
 
+  def i18n_object_scope_string(name)
+    scopes = [@object_name]
+    if klass = object && object.class
+      while klass && ![ActiveRecord::Base, Object].include?(klass)
+        scopes << klass.name.underscore
+        klass = klass.superclass
+      end
+    end
+    scopes.uniq!
+    scopes.each do |scope|
+      label = I18n.t(name, :scope => scope, :default => '')
+      return label if label.present?
+    end
+    scopes.map do |scope|
+      I18n.t(name, :scope => scope)
+    end.join('; ')
+  end
 end

@@ -102,7 +102,7 @@ describe ExtendedFormHelper do
 
       before do
         I18n.backend.store_translations('en', {
-          :shape => {:name => 'Shape name', :volume => 'Shape volume'},
+          :shape => {:name => 'Shape name', :volume => 'Shape volume', :save => 'Save'},
           :ellipse => {:name => 'Ellipse name', :radiuses => 'Ellipse radiuses'},
           :circle => {:name => 'Circle name', :radius => 'Circle radius'},
           :baloon => {:name => 'Balloon name', :radius => 'Balloon radius'},
@@ -123,6 +123,9 @@ describe ExtendedFormHelper do
           f.e_text_field(:radius, :label => true) do |c|
             c.i18n_label_string.should =~ /^translation missing/
           end
+          f.e_submit do |c|
+            c.to_s.should have_same_dom(%q{<input name="commit" type="submit" value="Save" />})
+          end
         end
       end
 
@@ -139,6 +142,9 @@ describe ExtendedFormHelper do
           end
           f.e_text_field(:radius, :label => true) do |c|
             c.i18n_label_string.should =~ /^translation missing/
+          end
+          f.e_submit do |c|
+            c.to_s.should have_same_dom(%q{<input name="commit" type="submit" value="Save" />})
           end
         end
       end
@@ -157,6 +163,9 @@ describe ExtendedFormHelper do
           f.e_text_field(:radius, :label => true) do |c|
             c.i18n_label_string.should == 'Circle radius'
           end
+          f.e_submit do |c|
+            c.to_s.should have_same_dom(%q{<input name="commit" type="submit" value="Save" />})
+          end
         end
       end
 
@@ -174,6 +183,9 @@ describe ExtendedFormHelper do
           end
           f.e_text_field(:radius, :label => true) do |c|
             c.i18n_label_string.should == 'Balloon radius'
+          end
+          f.e_submit do |c|
+            c.to_s.should have_same_dom(%q{<input name="commit" type="submit" value="Save" />})
           end
         end
       end
