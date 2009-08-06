@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/spec_helper'
+require File.dirname(__FILE__) + '/models'
 
 module Spec
   module Matchers
@@ -25,8 +26,8 @@ describe ExtendedFormHelper do
 
   before do
     @errors = mock('errors', :on => nil)
-    @obj = mock('obj', :text_column => 'qwerty', :object_name => 'obj', :to_s => 'obj', :errors => @errors)
-    I18n.backend.store_translations('en', {:obj => {:text_column => 'i18n text column label'}})
+    @obj = stub_model(Shape, :errors => @errors)
+    I18n.backend.store_translations('en', {:obj => {:name => 'i18n text column label'}})
   end
 
   def output_buffer
@@ -50,7 +51,7 @@ describe ExtendedFormHelper do
         def trigger_a(object_name, method, options)
           '<div>i am trigger</div>'
         end
-        e_control(:trigger_a, :obj, :text_column).
+        e_control(:trigger_a, :obj, :name).
         should have_same_dom(%q{
           <div class="control triggerA">
             <div>i am trigger</div>
@@ -59,7 +60,7 @@ describe ExtendedFormHelper do
       end
 
       it "should render with block" do
-        e_control(:trigger_b, :obj, :text_column) do |f|
+        e_control(:trigger_b, :obj, :name) do |f|
           concat content_before
           concat '<div>i am trigger</div>'
           concat content_after
@@ -76,27 +77,27 @@ describe ExtendedFormHelper do
 
     describe "rendering e_text_field" do
       it "should render simple form" do
-        e_text_field(:obj, :text_column).
+        e_text_field(:obj, :name).
         should have_same_dom(%q{
           <div class="control textField">
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
           </div>
         })
       end
 
       it "should render with before and after" do
-        e_text_field(:obj, :text_column, :before => content_before, :after => content_after).
+        e_text_field(:obj, :name, :before => content_before, :after => content_after).
         should have_same_dom(%q{
           <div class="control textField">
             <span>before</span>
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
             <span>after</span>
           </div>
         })
       end
 
       it "should render with block" do
-        e_text_field(:obj, :text_column) do |f|
+        e_text_field(:obj, :name) do |f|
           concat content_before
           concat f
           concat content_after
@@ -104,48 +105,48 @@ describe ExtendedFormHelper do
         should have_same_dom(%q{
           <div class="control textField">
             <span>before</span>
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
             <span>after</span>
           </div>
         })
       end
 
       it "should assign class to div" do
-        e_text_field(:obj, :text_column, :class => 'specialClass').
+        e_text_field(:obj, :name, :class => 'specialClass').
         should have_same_dom(%q{
           <div class="control textField specialClass">
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
           </div>
         })
       end
 
       it "should create label" do
-        e_text_field(:obj, :text_column, :label => 'text column label').
+        e_text_field(:obj, :name, :label => 'text column label').
         should have_same_dom(%q{
           <div class="control textField">
-            <label for="obj_text_column">text column label</label>
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <label for="obj_name">text column label</label>
+            <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
           </div>
         })
       end
 
       it "should get label from I18n" do
-        e_text_field(:obj, :text_column, :label => true).
+        e_text_field(:obj, :name, :label => true).
         should have_same_dom(%q{
           <div class="control textField">
-            <label for="obj_text_column">i18n text column label</label>
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+            <label for="obj_name">i18n text column label</label>
+            <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
           </div>
         })
       end
 
       it "should show error" do
         @errors.stub!(:on).and_return('error')
-        e_text_field(:obj, :text_column).
+        e_text_field(:obj, :name).
         should have_same_dom(%q{
           <div class="control textField">
             <div class="fieldWithErrors">
-              <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+              <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
             </div>
             <div class="formError">error</div>
           </div>
@@ -154,11 +155,11 @@ describe ExtendedFormHelper do
 
       it "should show errors" do
         @errors.stub!(:on).and_return(['error a', 'error b'])
-        e_text_field(:obj, :text_column).
+        e_text_field(:obj, :name).
         should have_same_dom(%q{
           <div class="control textField">
             <div class="fieldWithErrors">
-              <input id="obj_text_column" name="obj[text_column]" size="30" type="text" value="qwerty" />
+              <input id="obj_name" name="obj[name]" size="30" type="text" value="shape" />
             </div>
             <ul class="formErrors">
               <li class="formError">error a</li>
@@ -171,7 +172,7 @@ describe ExtendedFormHelper do
 
     describe "rendering e_text_area" do
       it "should render" do
-        e_text_area(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_text_area(:obj, :name, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -179,8 +180,8 @@ describe ExtendedFormHelper do
         should have_same_dom(%q{
           <div class="control textArea specialClass">
             <span>before</span>
-            <label for="obj_text_column">i18n text column label</label>
-            <textarea id="obj_text_column" name="obj[text_column]" cols="40" rows="20">qwerty</textarea>
+            <label for="obj_name">i18n text column label</label>
+            <textarea id="obj_name" name="obj[name]" cols="40" rows="20">shape</textarea>
             <span>after</span>
           </div>
         })
@@ -189,7 +190,7 @@ describe ExtendedFormHelper do
 
     describe "rendering e_password_field" do
       it "should render without value" do
-        e_password_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_password_field(:obj, :name, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -197,27 +198,27 @@ describe ExtendedFormHelper do
         should have_same_dom(%q{
           <div class="control passwordField specialClass">
             <span>before</span>
-            <label for="obj_text_column">i18n text column label</label>
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="" />
+            <label for="obj_name">i18n text column label</label>
+            <input id="obj_name" name="obj[name]" size="30" type="password" value="" />
             <span>after</span>
           </div>
         })
       end
 
       it "should render with value when it is set to true" do
-        e_password_field(:obj, :text_column, :value => true).
+        e_password_field(:obj, :name, :value => true).
         should have_same_dom(%q{
           <div class="control passwordField">
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="qwerty" />
+            <input id="obj_name" name="obj[name]" size="30" type="password" value="shape" />
           </div>
         })
       end
 
       it "should render with value when it is set" do
-        e_password_field(:obj, :text_column, :value => 'pass').
+        e_password_field(:obj, :name, :value => 'pass').
         should have_same_dom(%q{
           <div class="control passwordField">
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="password" value="pass" />
+            <input id="obj_name" name="obj[name]" size="30" type="password" value="pass" />
           </div>
         })
       end
@@ -225,7 +226,7 @@ describe ExtendedFormHelper do
 
     describe "rendering e_file_field" do
       it "should render" do
-        e_file_field(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_file_field(:obj, :name, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -233,8 +234,8 @@ describe ExtendedFormHelper do
         should have_same_dom(%q{
           <div class="control fileField specialClass">
             <span>before</span>
-            <label for="obj_text_column">i18n text column label</label>
-            <input id="obj_text_column" name="obj[text_column]" size="30" type="file" />
+            <label for="obj_name">i18n text column label</label>
+            <input id="obj_name" name="obj[name]" size="30" type="file" />
             <span>after</span>
           </div>
         })
@@ -243,7 +244,7 @@ describe ExtendedFormHelper do
 
     describe "rendering e_check_box" do
       it "should render" do
-        e_check_box(:obj, :text_column, :class => 'specialClass', :label => true) do |f|
+        e_check_box(:obj, :name, :class => 'specialClass', :label => true) do |f|
           concat content_before
           concat f
           concat content_after
@@ -251,9 +252,9 @@ describe ExtendedFormHelper do
         should have_same_dom(%q{
           <div class="control checkBox specialClass">
             <span>before</span>
-            <input name="obj[text_column]" type="hidden" value="0" />
-            <input id="obj_text_column" name="obj[text_column]" type="checkbox" value="1" />
-            <label for="obj_text_column">i18n text column label</label>
+            <input name="obj[name]" type="hidden" value="0" />
+            <input id="obj_name" name="obj[name]" type="checkbox" value="1" />
+            <label for="obj_name">i18n text column label</label>
             <span>after</span>
           </div>
         })
@@ -325,17 +326,17 @@ describe ExtendedFormHelper do
     end
 
     it "should call e_control" do
-      self.should_receive(:e_control).with(:trigger_a, :obj, "text_column", hash_including(:object)).and_return('')
+      self.should_receive(:e_control).with(:trigger_a, :obj, "name", hash_including(:object)).and_return('')
       form_for(:obj) do |f|
-        concat f.e_control(:trigger_a, 'text_column')
+        concat f.e_control(:trigger_a, 'name')
       end
     end
 
     %w(e_text_field e_text_area e_password_field e_file_field e_check_box).each do |helper|
       it "should call #{helper}" do
-        self.should_receive(helper.to_sym).with(:obj, "text_column", hash_including(:object)).and_return('')
+        self.should_receive(helper.to_sym).with(:obj, "name", hash_including(:object)).and_return('')
         form_for(:obj) do |f|
-          concat f.send(helper, 'text_column')
+          concat f.send(helper, 'name')
         end
       end
     end
@@ -364,9 +365,9 @@ describe ExtendedFormHelper do
     end
 
     it "should call error_messages_on" do
-      self.should_receive(:error_messages_on).with(:obj, "text_column", {}).and_return('')
+      self.should_receive(:error_messages_on).with(:obj, "name", {}).and_return('')
       form_for(:obj) do |f|
-        concat f.error_messages_on('text_column')
+        concat f.error_messages_on('name')
       end
     end
   end
