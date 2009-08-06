@@ -19,16 +19,28 @@ module Spec
   end
 end
 
-describe ExtendedFormHelper do
+module FormForTesting
+  include ActionView::Helpers::FormHelper
+  include ActionView::Helpers::FormTagHelper
+  include ActionView::Helpers::RecordIdentificationHelper
+
+  def polymorphic_path(record_or_hash_or_array, options = {})
+    [record_or_hash_or_array, options].inspect
+  end
+
+  def url_for(options = {})
+    options.inspect
+  end
+
+  def protect_against_forgery?
+    false
+  end
+end
+
+module HelperTesting
   include ExtendedFormHelper
   include ActionView::Helpers::TagHelper
   include ActionView::Helpers::TextHelper
-
-  before do
-    @errors = mock('errors', :on => nil)
-    @obj = stub_model(Shape, :errors => @errors)
-    I18n.backend.store_translations('en', {:obj => {:name => 'i18n text column label'}})
-  end
 
   def output_buffer
     @output_buffer ||= ''
@@ -43,6 +55,16 @@ describe ExtendedFormHelper do
 
   def content_after
     '<span>after</span>'
+  end
+end
+
+describe ExtendedFormHelper do
+  include HelperTesting
+
+  before do
+    @errors = mock('errors', :on => nil)
+    @obj = stub_model(Shape, :errors => @errors)
+    I18n.backend.store_translations('en', {:obj => {:name => 'i18n text column label'}})
   end
 
   describe "with direct object sending" do
@@ -72,6 +94,88 @@ describe ExtendedFormHelper do
             <span>after</span>
           </div>
         })
+      end
+    end
+
+    describe "i18n label" do
+      include FormForTesting
+
+      before do
+        I18n.backend.store_translations('en', {
+          :shape => {:name => 'Shape name', :volume => 'Shape volume'},
+          :ellipse => {:name => 'Ellipse name', :radiuses => 'Ellipse radiuses'},
+          :circle => {:name => 'Circle name', :radius => 'Circle radius'},
+          :baloon => {:name => 'Balloon name', :radius => 'Balloon radius'},
+        })
+      end
+
+      it "should get labels for shape" do
+        form_for(stub_model(Shape)) do |f|
+          f.e_text_field(:name, :label => true) do |c|
+            c.i18n_label_string.should == 'Shape name'
+          end
+          f.e_text_field(:volume, :label => true) do |c|
+            c.i18n_label_string.should == 'Shape volume'
+          end
+          f.e_text_field(:radiuses, :label => true) do |c|
+            c.i18n_label_string.should =~ /^translation missing/
+          end
+          f.e_text_field(:radius, :label => true) do |c|
+            c.i18n_label_string.should =~ /^translation missing/
+          end
+        end
+      end
+
+      it "should get labels for ellipse" do
+        form_for(stub_model(Ellipse)) do |f|
+          f.e_text_field(:name, :label => true) do |c|
+            c.i18n_label_string.should == 'Ellipse name'
+          end
+          f.e_text_field(:volume, :label => true) do |c|
+            c.i18n_label_string.should == 'Shape volume'
+          end
+          f.e_text_field(:radiuses, :label => true) do |c|
+            c.i18n_label_string.should == 'Ellipse radiuses'
+          end
+          f.e_text_field(:radius, :label => true) do |c|
+            c.i18n_label_string.should =~ /^translation missing/
+          end
+        end
+      end
+
+      it "should get labels for ellipse" do
+        form_for(stub_model(Circle)) do |f|
+          f.e_text_field(:name, :label => true) do |c|
+            c.i18n_label_string.should == 'Circle name'
+          end
+          f.e_text_field(:volume, :label => true) do |c|
+            c.i18n_label_string.should == 'Shape volume'
+          end
+          f.e_text_field(:radiuses, :label => true) do |c|
+            c.i18n_label_string.should == 'Ellipse radiuses'
+          end
+          f.e_text_field(:radius, :label => true) do |c|
+            c.i18n_label_string.should == 'Circle radius'
+          end
+        end
+      end
+
+      it "should use object_name first" do
+        @baloon = stub_model(Circle)
+        form_for(:baloon) do |f|
+          f.e_text_field(:name, :label => true) do |c|
+            c.i18n_label_string.should == 'Balloon name'
+          end
+          f.e_text_field(:volume, :label => true) do |c|
+            c.i18n_label_string.should == 'Shape volume'
+          end
+          f.e_text_field(:radiuses, :label => true) do |c|
+            c.i18n_label_string.should == 'Ellipse radiuses'
+          end
+          f.e_text_field(:radius, :label => true) do |c|
+            c.i18n_label_string.should == 'Balloon radius'
+          end
+        end
       end
     end
 
@@ -309,21 +413,7 @@ describe ExtendedFormHelper do
   end
 
   describe "with form_for" do
-    include ActionView::Helpers::FormHelper
-    include ActionView::Helpers::FormTagHelper
-    include ActionView::Helpers::RecordIdentificationHelper
-
-    def polymorphic_path(record_or_hash_or_array, options = {})
-      [record_or_hash_or_array, options].inspect
-    end
-
-    def url_for(options = {})
-      options.inspect
-    end
-
-    def protect_against_forgery?
-      false
-    end
+    include FormForTesting
 
     it "should call e_control" do
       self.should_receive(:e_control).with(:trigger_a, :obj, "name", hash_including(:object)).and_return('')

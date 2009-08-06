@@ -4,7 +4,6 @@ class CreateSchema < ActiveRecord::Migration
   def self.up
     create_table :shapes, :force => true do |t|
       t.string :type
-      t.string :text_column 
     end
   end
 end

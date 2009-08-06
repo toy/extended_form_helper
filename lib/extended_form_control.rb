@@ -39,9 +39,27 @@ class ExtendedFormControl
     end
   end
 
+  def i18n_label_string
+    scopes = [@object_name]
+    if klass = object && object.class
+      while klass && ![ActiveRecord::Base, Object].include?(klass)
+        scopes << klass.name.underscore
+        klass = klass.superclass
+      end
+    end
+    scopes.uniq!
+    scopes.each do |scope|
+      label = I18n.t(@method, :scope => scope, :default => '')
+      return label if label.present?
+    end
+    scopes.map do |scope|
+      I18n.t(@method, :scope => scope)
+    end.join('; ')
+  end
+
   def label
     # calling label which is defined in ActionView::Helpers::FormHelper
-    super(@object_name, @method, @label == true ? I18n.t(@method, :scope => @object_name) : @label)
+    super(@object_name, @method, @label == true ? i18n_label_string : @label)
   end
 
   def control
