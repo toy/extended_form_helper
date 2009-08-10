@@ -115,11 +115,11 @@ protected
     end
     scopes.uniq!
     scopes.each do |scope|
-      label = I18n.t(name, :scope => scope, :default => '')
+      label = I18n.t("#{scope}.#{name}", :default => '')
       return label if label.present?
     end
     scopes.map do |scope|
-      I18n.t(name, :scope => scope)
+      I18n.t("#{scope}.#{name}")
     end.join('; ')
   end
 end
