@@ -6,5 +6,5 @@ rescue LoadError
 end
 
 plugin_spec_dir = File.dirname(__FILE__)
-ActiveRecord::Base.logger = Logger.new(plugin_spec_dir + "/debug.log")
+ActiveRecord::Base.logger = Logger.new(File.join(RAILS_ROOT, 'log', 'extended_form_helper-plugin-debug.log'))
 
